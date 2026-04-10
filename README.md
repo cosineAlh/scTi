@@ -1,10 +1,12 @@
-<!-- 这份 README 为你的 **scTi (Information Science Personality Kernel Scanner)** 项目量身定制，融合了学术自嘲、信息学院黑话和赛博朋克风格。 -->
+<!-- 这份 README 为你的 **scTi (Information Science Personality Kernel Scanner)** 项目量身定制，融合了学术自嘲、信息学院黑话。 -->
 
 -----
 
-# 🛰️ scTi - 信息学院研究生人格内核扫描协议
+# 🛰️ scTi - 信息学院研究生人格内核扫描
 
 > **MBTI 已过时，scTi (Information Science Personality Test) 才是属于信院搬砖人的底层协议。**
+
+> 测试链接： [https://scti.pages.dev/](https://scti.pages.dev/)
 
   
 
