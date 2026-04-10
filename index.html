@@ -1,29 +1,44 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>SBTI 人格测试</title>
+  <title>scTi 测试</title>
   <style>
     :root {
-      --bg: #f6faf6;
+      /* 背景采用极浅的蓝灰色，减少视觉疲劳 */
+      --bg: #f0f4f8;
       --panel: #ffffff;
-      --text: #1e2a22;
-      --muted: #6a786f;
-      --line: #dbe8dd;
-      --soft: #edf6ef;
-      --accent: #6c8d71;
-      --accent-strong: #4d6a53;
-      --shadow: 0 16px 40px rgba(47, 73, 55, 0.08);
-      --radius: 22px;
+      /* 文字使用深藏青色，增加高级感 */
+      --text: #1a2b3c;
+      --muted: #64748b;
+      /* 边框和线条 */
+      --line: #cbd5e1;
+      --soft: #e2e8f0;
+      /* 主色调：学术蓝 */
+      --accent: #3b82f6;
+      /* 强调色：深空蓝，用于主要按钮和标题 */
+      --accent-strong: #1e40af;
+      /* 阴影带有一点点蓝色调 */
+      --shadow: 0 16px 40px rgba(30, 64, 175, 0.08);
+      --radius: 18px;
     }
 
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; }
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
-      background:
-        radial-gradient(circle at top left, #f8fff8 0, #f6faf6 36%, #f2f7f3 100%);
+      background: radial-gradient(circle at top left, #f8faff 0, #f0f4f8 36%, #e2e8f0 100%);
       color: var(--text);
       min-height: 100vh;
     }
@@ -56,7 +71,7 @@
       width: 180px;
       height: 180px;
       border-radius: 50%;
-      background: linear-gradient(180deg, rgba(127, 165, 134, 0.18), rgba(127, 165, 134, 0.02));
+      background: linear-gradient(180deg, rgba(59, 130, 246, 0.15), rgba(59, 130, 246, 0.02));
       pointer-events: none;
     }
 
@@ -73,13 +88,20 @@
       margin-bottom: 16px;
     }
 
-    h1, h2, h3, p { margin: 0; }
+    h1,
+    h2,
+    h3,
+    p {
+      margin: 0;
+    }
+
     .hero h1 {
       font-size: clamp(28px, 5vw, 52px);
       line-height: 1.08;
       letter-spacing: -0.03em;
       max-width: 680px;
     }
+
     .hero .sub {
       margin-top: 14px;
       color: var(--muted);
@@ -116,12 +138,13 @@
       font-size: 14px;
     }
 
-        .hero-actions {
+    .hero-actions {
       display: flex;
       flex-wrap: wrap;
       gap: 12px;
       margin-top: 22px;
     }
+
     .hero-minimal {
       min-height: 48vh;
       display: flex;
@@ -131,11 +154,16 @@
       text-align: center;
       padding: 42px 20px;
     }
-    .hero-minimal::after { display: none; }
+
+    .hero-minimal::after {
+      display: none;
+    }
+
     .hero-minimal h1 {
       max-width: none;
       margin: 0;
     }
+
     .hero-actions-single {
       justify-content: center;
       margin-top: 28px;
@@ -148,8 +176,15 @@
       font: inherit;
     }
 
-    button:hover { transform: translateY(-1px); }
-    button:disabled { cursor: not-allowed; opacity: 0.55; transform: none; }
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.55;
+      transform: none;
+    }
 
     .btn-primary {
       background: var(--accent-strong);
@@ -169,13 +204,40 @@
       font-weight: 700;
     }
 
-    .screen { display: none; }
-    .screen.active { display: block; }
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
 
     .test-wrap,
     .result-wrap {
       margin-top: 22px;
       padding: 22px;
+    }
+
+    /* Results UI polish: subtle card gradient, neon accents, and micro-interactions */
+    .result-wrap {
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.9));
+      border: 1px solid rgba(140, 152, 255, 0.12);
+      box-shadow: 0 24px 60px rgba(99, 102, 241, 0.06);
+      position: relative;
+      overflow: visible;
+    }
+
+    .result-wrap::before {
+      content: "";
+      position: absolute;
+      left: -40px;
+      top: -40px;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle at 30% 30%, rgba(124, 58, 237, 0.12), transparent 40%);
+      filter: blur(34px);
+      pointer-events: none;
+      z-index: 0;
     }
 
     .topbar {
@@ -191,17 +253,17 @@
       flex: 1;
       min-width: 240px;
       height: 10px;
-      background: #edf3ee;
+      background: #e2eafc;
       border-radius: 999px;
       overflow: hidden;
       position: relative;
     }
 
-    .progress > span {
+    .progress>span {
       display: block;
       width: 0;
       height: 100%;
-      background: linear-gradient(90deg, #97b59c, #5b7a62);
+      background: linear-gradient(90deg, #60a5fa, #1e40af);
       border-radius: inherit;
       transition: width .22s ease;
     }
@@ -221,7 +283,7 @@
       border: 1px solid var(--line);
       border-radius: 18px;
       padding: 18px;
-      background: linear-gradient(180deg, #ffffff, #fbfdfb);
+      background: linear-gradient(180deg, #ffffff, #f8faff);
     }
 
     .question-meta {
@@ -268,8 +330,8 @@
     }
 
     .option:hover {
-      border-color: #bcd0c1;
-      background: #f8fcf9;
+      border-color: #93c5fd;
+      background: #eff6ff;
     }
 
     .option input {
@@ -303,9 +365,11 @@
 
     .result-hero {
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
+      grid-template-columns: 1.25fr 0.75fr;
       gap: 18px;
       align-items: stretch;
+      position: relative;
+      z-index: 1;
     }
 
     .type-box,
@@ -313,10 +377,11 @@
     .dim-box,
     .top3-box,
     .about-box {
-      border: 1px solid var(--line);
       border-radius: 18px;
       padding: 18px;
-      background: linear-gradient(180deg, #ffffff, #fbfdfb);
+      background: linear-gradient(180deg, #ffffff, #fbfdff);
+      border: 1px solid rgba(148, 163, 184, 0.08);
+      box-shadow: 0 10px 30px rgba(96, 165, 250, 0.03);
     }
 
     .type-kicker {
@@ -327,9 +392,15 @@
     }
 
     .type-name {
-      font-size: clamp(30px, 5vw, 48px);
-      line-height: 1.08;
-      letter-spacing: -0.03em;
+      font-size: clamp(36px, 6.5vw, 64px);
+      line-height: 1.02;
+      letter-spacing: -0.02em;
+      font-weight: 900;
+      color: #0b1220;
+      background: linear-gradient(90deg, #fb7185 0%, #7c3aed 45%, #60a5fa 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 12px 40px rgba(124, 58, 237, 0.06);
     }
 
     .type-subname {
@@ -345,10 +416,11 @@
       gap: 8px;
       border-radius: 999px;
       padding: 10px 14px;
-      background: var(--soft);
-      border: 1px solid var(--line);
-      color: var(--accent-strong);
-      font-weight: 700;
+      background: linear-gradient(90deg, rgba(96, 165, 250, 0.12), rgba(124, 58, 237, 0.06));
+      border: 1px solid rgba(96, 165, 250, 0.12);
+      color: #4f46e5;
+      font-weight: 800;
+      box-shadow: 0 6px 20px rgba(96, 165, 250, 0.04);
     }
 
     .type-desc {
@@ -373,10 +445,16 @@
     }
 
     .score-item {
-      border: 1px solid var(--line);
-      border-radius: 14px;
+      border-radius: 12px;
       padding: 12px;
-      background: #fff;
+      background: linear-gradient(180deg, #ffffff, #f7fbff);
+      border: 1px solid rgba(148, 163, 184, 0.06);
+      transition: transform .18s ease, box-shadow .18s ease;
+    }
+
+    .score-item:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 18px 40px rgba(96, 165, 250, 0.08);
     }
 
     .score-item .k {
@@ -386,9 +464,12 @@
     }
 
     .score-item .v {
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--accent-strong);
+      font-size: 22px;
+      font-weight: 900;
+      background: linear-gradient(90deg, #7c3aed, #60a5fa);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 8px 30px rgba(124, 58, 237, 0.06);
     }
 
     .dim-grid {
@@ -461,33 +542,41 @@
       line-height: 1.7;
     }
 
-    
+
     .result-layout {
       display: grid;
       gap: 18px;
     }
+
     .result-top {
       display: grid;
       grid-template-columns: 0.9fr 1.1fr;
       gap: 18px;
       align-items: stretch;
     }
-    .poster-box, .type-box, .analysis-box, .dim-box, .note-box {
+
+    .poster-box,
+    .type-box,
+    .analysis-box,
+    .dim-box,
+    .note-box {
       border: 1px solid var(--line);
       border-radius: 18px;
       padding: 18px;
-      background: linear-gradient(180deg, #ffffff, #fbfdfb);
+      background: linear-gradient(180deg, #ffffff, #f8faff);
     }
-        .poster-box {
+
+    .poster-box {
       display: grid;
       grid-template-rows: 1fr auto;
       min-height: 280px;
       overflow: hidden;
       position: relative;
       background:
-        radial-gradient(circle at top right, rgba(127,165,134,0.16), rgba(127,165,134,0) 40%),
-        linear-gradient(180deg, #ffffff, #f7fbf8);
+        radial-gradient(circle at top right, rgba(124, 58, 237, 0.12), rgba(255, 255, 255, 0) 40%),
+        linear-gradient(180deg, #ffffff, #f8fbff);
     }
+
     .poster-box::after {
       content: "";
       position: absolute;
@@ -496,22 +585,25 @@
       width: 140px;
       height: 140px;
       border-radius: 50%;
-      background: linear-gradient(180deg, rgba(127,165,134,0.12), rgba(127,165,134,0.01));
+      background: linear-gradient(180deg, rgba(127, 165, 134, 0.12), rgba(127, 165, 134, 0.01));
       pointer-events: none;
     }
+
     .poster-image {
       width: 100%;
       min-height: 220px;
       max-height: 460px;
       object-fit: contain;
       border-radius: 18px;
-      background: rgba(255,255,255,0.75);
+      background: linear-gradient(90deg, rgba(255, 255, 255, 0.95), rgba(250, 250, 255, 0.8));
       position: relative;
       z-index: 1;
     }
+
     .poster-box.no-image .poster-image {
       display: none;
     }
+
     .poster-caption {
       margin-top: 14px;
       color: var(--muted);
@@ -520,23 +612,27 @@
       position: relative;
       z-index: 1;
     }
+
     .type-kicker {
       font-size: 12px;
       color: var(--accent-strong);
       margin-bottom: 8px;
       letter-spacing: .06em;
     }
+
     .type-name {
       font-size: clamp(30px, 5vw, 48px);
       line-height: 1.08;
       letter-spacing: -0.03em;
     }
+
     .type-subname {
       margin-top: 10px;
       color: var(--muted);
       font-size: 14px;
       line-height: 1.8;
     }
+
     .match {
       margin-top: 18px;
       display: inline-flex;
@@ -551,15 +647,20 @@
       font-size: 14px;
       line-height: 1.4;
     }
-    .analysis-box h3, .dim-box h3, .note-box h3 {
+
+    .analysis-box h3,
+    .dim-box h3,
+    .note-box h3 {
       font-size: 16px;
       margin-bottom: 12px;
     }
+
     .result-actions {
       margin-top: 22px;
       display: flex;
       justify-content: flex-end;
     }
+
     .analysis-box p {
       margin: 0;
       color: #304034;
@@ -567,16 +668,19 @@
       line-height: 1.9;
       white-space: pre-wrap;
     }
+
     .dim-list {
       display: grid;
       gap: 12px;
     }
+
     .dim-item {
       border: 1px solid var(--line);
       border-radius: 16px;
       padding: 14px;
       background: #fff;
     }
+
     .dim-item-top {
       display: flex;
       justify-content: space-between;
@@ -585,23 +689,27 @@
       margin-bottom: 8px;
       flex-wrap: wrap;
     }
+
     .dim-item-name {
       font-size: 14px;
       font-weight: 700;
       color: var(--text);
     }
+
     .dim-item-score {
       color: var(--accent-strong);
       font-weight: 800;
       font-size: 14px;
       white-space: nowrap;
     }
+
     .dim-item p {
       margin: 0;
       color: var(--muted);
       font-size: 13px;
       line-height: 1.8;
     }
+
     .note-box p {
       margin: 0;
       color: var(--muted);
@@ -612,9 +720,10 @@
     .author-box {
       border: 1px solid var(--line);
       border-radius: 18px;
-      background: linear-gradient(180deg, #ffffff, #fbfdfb);
+      background: linear-gradient(180deg, #ffffff, #f8faff);
       overflow: hidden;
     }
+
     .author-box summary {
       list-style: none;
       cursor: pointer;
@@ -627,7 +736,11 @@
       justify-content: space-between;
       gap: 12px;
     }
-    .author-box summary::-webkit-details-marker { display: none; }
+
+    .author-box summary::-webkit-details-marker {
+      display: none;
+    }
+
     .author-box summary::after {
       content: '展开';
       font-size: 12px;
@@ -639,13 +752,16 @@
       border-radius: 999px;
       flex-shrink: 0;
     }
+
     .author-box[open] summary::after {
       content: '收起';
     }
+
     .author-content {
       border-top: 1px solid var(--line);
       padding: 0 18px 18px;
     }
+
     .author-content p {
       margin: 14px 0 0;
       color: #304034;
@@ -661,50 +777,257 @@
       flex-wrap: wrap;
       margin-top: 22px;
     }
+
     @media (max-width: 860px) {
-      .result-top { grid-template-columns: 1fr; }
+      .result-top {
+        grid-template-columns: 1fr;
+      }
     }
 
-@media (max-width: 860px) {
+    @media (max-width: 860px) {
+
       .hero-grid,
       .result-hero {
         grid-template-columns: 1fr;
       }
-      .dim-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+      .dim-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
     }
 
     @media (max-width: 600px) {
-      .shell { padding: 14px 12px 42px; }
-      .hero, .test-wrap, .result-wrap { padding: 16px; }
-      .hero h1 { font-size: 32px; }
-      .question-title { font-size: 15px; }
+      .shell {
+        padding: 14px 12px 42px;
+      }
+
+      .hero,
+      .test-wrap,
+      .result-wrap {
+        padding: 16px;
+      }
+
+      .hero h1 {
+        font-size: 32px;
+      }
+
+      .question-title {
+        font-size: 15px;
+      }
+
       .dim-grid,
-      .score-grid { grid-template-columns: 1fr; }
+      .score-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
+
 <body>
   <div class="shell">
     <section id="intro" class="screen active">
-      <div class="hero card hero-minimal">
-        <h1>MBTI已经过时，SBTI来了。</h1>
-        <div class="hero-actions hero-actions-single">
-          <button id="startBtn" class="btn-primary">开始测试</button>
-        </div>
-        <div style="padding-top: 2rem; display: flex; flex-direction: column;">
-          <span>
-            原作者：
-            <a href="https://space.bilibili.com/417038183">B站@蛆肉儿串儿</a>
-          </span>
-          <span>
-            托管：Cloudflare (免费)
-          </span>
-          <span>
-            域名：Spaceship (自费)
-          </span>
-        </div>
+            <style>
+        /* 首页专属酷炫样式 */
+        .hero-cool {
+          --accent: #7c3aed;
+          --accent-2: #60a5fa;
+          min-height: 70vh;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          text-align: center;
+          padding: 48px 20px;
+          position: relative;
+          overflow: hidden;
+          background: #f8fafc;
+          /* 浅色背景 */
+          border: 2px solid transparent;
+          /* 轻盈霓虹边框（适配浅色背景） */
+          border-image: linear-gradient(135deg, #7dd3fc 0%, #60a5fa 25%, #7c3aed 50%, #c084fc 75%, #fb7185 100%) 1;
+          box-shadow: 0 12px 48px rgba(99, 102, 241, 0.06), 0 0 120px rgba(124, 58, 237, 0.04) inset;
+        }
+
+        /* CSS 动态矩阵背景纹理 */
+        .hero-cool::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background-image:
+            linear-gradient(rgba(15, 23, 42, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(15, 23, 42, 0.03) 1px, transparent 1px);
+          background-size: 20px 20px;
+          background-position: center center;
+          opacity: 0.6;
+          pointer-events: none;
+        }
+
+        /* 极简主标题 scTi */
+        .glitch-title {
+          font-size: clamp(96px, 18vw, 180px);
+          font-weight: 900;
+          line-height: 1;
+          letter-spacing: -0.03em;
+          margin: 0 0 24px;
+          position: relative;
+          z-index: 2;
+          /* 赛博朋克霓虹渐变文字 */
+          background: linear-gradient(90deg, #fb7185 0%, #7c3aed 45%, #60a5fa 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          text-shadow: 0 8px 30px rgba(124, 58, 237, 0.10);
+        }
+
+        /* 强化炫光效果 */
+        .glitch-title::before,
+        .glitch-title::after {
+          content: attr(data-text);
+          position: absolute;
+          left: 0;
+          top: 0;
+          width: 100%;
+          height: 100%;
+          z-index: -1;
+          pointer-events: none;
+          -webkit-mask-image: linear-gradient(transparent, black);
+        }
+
+        .glitch-title::before {
+          color: var(--accent);
+          transform: translateX(-10px) translateY(-2px) skewX(-6deg);
+          filter: blur(18px) saturate(150%);
+          opacity: 0.95;
+          mix-blend-mode: screen;
+        }
+
+        .glitch-title::after {
+          color: var(--accent-2);
+          transform: translateX(10px) translateY(2px) skewX(6deg);
+          filter: blur(28px) saturate(160%);
+          opacity: 0.8;
+          mix-blend-mode: screen;
+        }
+
+        /* 打字机描述文本 */
+        .typewriter-sub {
+          font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, Courier, monospace;
+          color: #475569;
+          /* 深灰文字，适配浅色背景 */
+          font-size: 16px;
+          line-height: 1.6;
+          max-width: 500px;
+          width: auto;
+          display: inline-block;
+          box-sizing: border-box;
+          margin-bottom: 40px;
+          position: relative;
+          z-index: 1;
+          border-right: 2px solid var(--accent);
+          /* 光标 */
+          white-space: nowrap;
+          overflow: hidden;
+          animation:
+            typing 3.5s steps(40, end),
+            blink-caret 0.75s step-end infinite;
+        }
+
+        .start-btn-cool {
+          position: relative;
+          z-index: 1;
+          padding: 16px 32px;
+          font-size: 18px;
+          background: transparent;
+          border: 2px solid var(--accent);
+          color: var(--accent);
+          text-transform: uppercase;
+          letter-spacing: 0.1em;
+          transition: all 0.3s ease;
+          box-shadow: 0 8px 24px rgba(124, 58, 237, 0.06);
+        }
+
+        .start-btn-cool:hover {
+          background: linear-gradient(90deg, var(--accent), var(--accent-2));
+          color: #ffffff;
+          box-shadow: 0 18px 60px rgba(124, 58, 237, 0.18);
+          transform: translateY(-4px) scale(1.04);
+        }
+
+        .author-trace {
+          position: absolute;
+          bottom: 15px;
+          right: 20px;
+          font-size: 12px;
+          color: rgba(15, 23, 42, 0.45);
+          font-family: monospace;
+        }
+
+        /* 打字机动画核心 (改为使用 max-width，更稳定) */
+        @keyframes typing {
+          from {
+            max-width: 0;
+          }
+
+          to {
+            max-width: 500px;
+          }
+        }
+
+        /* 光标闪烁动画 (针对右侧边框光标) */
+        @keyframes blink-caret {
+
+          from,
+          to {
+            border-right-color: transparent;
+          }
+
+          50% {
+            border-right-color: var(--accent);
+          }
+        }
+
+        /* 移动端适配 */
+        @media (max-width: 600px) {
+          .typewriter-sub {
+            font-size: 14px;
+            white-space: normal;
+            /* 移动端允许换行 */
+            border-right: none;
+            animation: none;
+            /* 关闭动画防止溢出 */
+            width: auto;
+            display: block;
+          }
+        }
+      </style>
+
+            <div class="hero card hero-cool">
+                        <div class="eyebrow"
+          style="background: rgba(30, 64, 175, 0.2); border-color: rgba(255,255,255,0.1); color: #fff;">
+                    <span>[ 系统就绪 ]</span>
+                  </div>
+
+        <h1 class="glitch-title" data-text="scTi">scTi</h1>
+
+                        <div class="typewriter-sub">
+                    &gt; 正在初始化信院研究生人格内核扫描协议...<br>
+                    &gt; 准备好面对真实的电子灵魂了吗？
+                  </div>
+
+                        <div class="hero-actions hero-actions-single">
+                    <button id="startBtn" class="btn-primary start-btn-cool">
+                        执行内核扫描
+                      </button>
+                  </div>
+
+                        <div class="author-trace">
+                    Author: [闲的没事干的研究生] // Ver: 1.0.3
+                  </div>
+             
       </div>
-    </section>
+          </section>
 
     <section id="test" class="screen">
       <div class="test-wrap card">
@@ -725,7 +1048,7 @@
       </div>
     </section>
 
-    
+
     <section id="result" class="screen">
       <div class="result-wrap card">
         <div class="result-layout">
@@ -748,23 +1071,43 @@
             <p id="resultDesc"></p>
           </div>
 
+          <div class="card chart-box" style="padding: 22px; margin-top: 18px;">
+            <h3>学术能力模型分析 (Academic Kernel Load)</h3>
+            <div style="max-width: 400px; margin: 0 auto;">
+              <canvas id="radarChart"></canvas>
+            </div>
+          </div>
+
           <div class="dim-box">
             <h3>十五维度评分</h3>
             <div id="dimList" class="dim-list"></div>
           </div>
 
           <div class="note-box">
-            <h3>友情提示</h3>
-            <p id="funNote">本测试仅供娱乐，别拿它当诊断、面试、相亲、分手、招魂、算命或人生判决书。</p>
+            <h3>致谢</h3>
+            <p id="funNote">本项目基于SBTI改编，感谢原作者 <a href="https://space.bilibili.com/417038183">B站@蛆肉儿串儿</a> 的创意。</p>
           </div>
 
-                    <details class="author-box">
+          <details class="author-box">
             <summary>作者的话</summary>
             <div class="author-content">
-              <p>本测试首发于b站up主蛆肉儿串儿（UID417038183），初衷是劝诫一位爱喝酒的朋友戒酒。</p>
-              <p>由于作者的人格是SHIT愤世者，所以平等的攻击了各位，在此抱歉！！不过我是一个绝世大美女，你们一定会原谅我，有B站的朋友们也可以关注我。</p>
-              <p>关于这个测试，我没法很好的平衡娱乐和专业性，因此对于一些人格的阐释较为模糊或完全不准（如屌丝可能并非真的屌丝），如有冒犯非常抱歉！！</p>
-              <p>再鉴于时间精力有限，就随便搞了一个先这样玩玩，后续会慢慢完善修改的，总之好玩为主，还请不要用于盈利呀。</p>
+              <p>嘿，既然你已经看到了这里，说明你还没被满屏的红色报错或是导师的“？”击垮。</p>
+
+              <p>
+                <strong>关于这个测试：</strong>我无法在有限的代码里精确衡量一个人的灵魂。如果它测准了你的焦虑，请记得你并不孤单；如果它测出的结果离谱，那说明你的脑回路已经超越了人类现有的学术框架，恭喜你，那是天才的征兆。
+              </p>
+
+              <p><strong>我想对你说：</strong>
+                硕博生涯就像一条不收敛的 Loss 曲线，我们常常在过拟合与欠拟合之间反复横跳。但请记住，<strong>你远比你的 H-index、你的 Paper 数量、或是那个冰冷的毕业证更有价值。</strong>
+              </p>
+
+              <p>祝你：<br>
+                Reviewer 2 在审稿前刚中了大奖，心情大好；<br>
+                服务器的 GPU 永远为你留着空位，且显存不炸；<br>
+                最重要的是，祝你在走出实验室的那一刻，依然能感受到阳光的温度，依然记得当初那个对世界充满好奇的自己。
+              </p>
+
+              <p style="text-align: right; font-style: italic;">—— 一个在赛博荒原上为你加油的匿名作者</p>
             </div>
           </details>
         </div>
@@ -780,209 +1123,231 @@
 
   </div>
 
-  
+
   <script>
     const dimensionMeta = {
-      S1: { name: 'S1 自尊自信', model: '自我模型' },
-      S2: { name: 'S2 自我清晰度', model: '自我模型' },
-      S3: { name: 'S3 核心价值', model: '自我模型' },
-      E1: { name: 'E1 依恋安全感', model: '情感模型' },
-      E2: { name: 'E2 情感投入度', model: '情感模型' },
-      E3: { name: 'E3 边界与依赖', model: '情感模型' },
-      A1: { name: 'A1 世界观倾向', model: '态度模型' },
-      A2: { name: 'A2 规则与灵活度', model: '态度模型' },
-      A3: { name: 'A3 人生意义感', model: '态度模型' },
-      Ac1: { name: 'Ac1 动机导向', model: '行动驱力模型' },
-      Ac2: { name: 'Ac2 决策风格', model: '行动驱力模型' },
-      Ac3: { name: 'Ac3 执行模式', model: '行动驱力模型' },
-      So1: { name: 'So1 社交主动性', model: '社交模型' },
-      So2: { name: 'So2 人际边界感', model: '社交模型' },
-      So3: { name: 'So3 表达与真实度', model: '社交模型' }
+      S1: { name: 'S1 学术自尊', model: '自我模型' },
+      S2: { name: 'S2 选题清晰度', model: '自我模型' },
+      S3: { name: 'S3 毕业/学术追求', model: '自我模型' },
+      E1: { name: 'E1 导师依恋感', model: '情感模型' },
+      E2: { name: 'E2 实验室投入度', model: '情感模型' },
+      E3: { name: 'E3 科研与生活边界', model: '情感模型' },
+      A1: { name: 'A1 学术界观倾向', model: '态度模型' },
+      A2: { name: 'A2 实验规则感', model: '态度模型' },
+      A3: { name: 'A3 论文意义感', model: '态度模型' },
+      Ac1: { name: 'Ac1 论文产出动机', model: '行动驱力模型' },
+      Ac2: { name: 'Ac2 代码/Debug风格', model: '行动驱力模型' },
+      Ac3: { name: 'Ac3 赶Deadline模式', model: '行动驱力模型' },
+      So1: { name: 'So1 学术交流主动性', model: '社交模型' },
+      So2: { name: 'So2 同门边界感', model: '社交模型' },
+      So3: { name: 'So3 组会汇报真实度', model: '社交模型' }
     };
+
     const questions = [
+      // --- S1: 学术自尊 ---
       {
         id: 'q1', dim: 'S1',
-        text: '我不仅是屌丝，我还是joker,我还是咸鱼，这辈子没谈过一场恋爱，胆怯又自卑，我的青春就是一场又一场的意淫，每一天幻想着我也能有一个女孩子和我一起压马路，一起逛街，一起玩，现实却是爆了父母金币，读了个烂学校，混日子之后找班上，没有理想，没有目标，没有能力的三无人员，每次看到你能在网上开屌丝的玩笑，我都想哭，我就是地底下的老鼠，透过下水井的缝隙，窥探地上的各种美好，每一次看到这种都是对我心灵的一次伤害，对我生存空间的一次压缩，求求哥们给我们这种小丑一点活路吧，我真的不想在白天把枕巾哭湿一大片',
+        text: '我不仅是学术废柴，我还是代码小丑，我还是实验咸鱼。这辈子没发过一篇像样的顶会，胆怯又自卑。我的读研青春就是一场又一场的意淫：幻想着代码没有bug，幻想着导师夸奖，现实却是爆了实验室资源，读了个烂项目，每天在组会上被处刑。我就是地底下的吗喽，透过实验室窗户的缝隙，窥探对面大厂高薪的美好。每一次看到同门发“Accepted”都是对我心灵的一次强拆，对我生存空间的一次压缩。求求给我们这种学术小丑一点活路吧，我真的不想在深夜的宿舍把枕巾哭湿一大片，因为学校的热水特么的又停了，我连澡都洗不了，只能带着一身学术的臭汗在冷风中凌乱。',
         options: [
-          { label: '我哭了。。', value: 1 },
-          { label: '这是什么。。', value: 2 },
-          { label: '这不是我！', value: 3 }
+          { label: '这就是鼠鼠我，已经在哭了/(ㄒoㄒ)/~~', value: 1 },
+          { label: '这是什么，发我Github看看。', value: 2 },
+          { label: '爬。我正忙着和三花猫讨论如何篡位当院长。', value: 3 },
+          { label: '对咯！！！', value: 4 }
         ]
       },
       {
         id: 'q2', dim: 'S1',
-        text: '我不够好，周围的人都比我优秀',
+        text: '导师在组会上当众指出你的 PPT 逻辑混乱、实验数据不可信，并叹了口气说：“你要多努力啊”，此时你的心理状态是？',
         options: [
-          { label: '确实', value: 1 },
-          { label: '有时', value: 2 },
-          { label: '不是', value: 3 }
+          { label: '那声叹息直接吹熄了我生命中最后一点学术火光。', value: 1 },
+          { label: '老板今天心情不好吧，虽然有点丢脸，但回去改改就行，谁还没被骂过呢。', value: 2 },
+          { label: '老板根本没看懂我的深度逻辑。懂不懂什么叫‘前沿探索’？懂不懂什么叫‘非共识创新’？ta 已经落伍了。', value: 3 }
         ]
       },
+
+      // --- S2: 选题清晰度 ---
       {
         id: 'q3', dim: 'S2',
-        text: '我很清楚真正的自己是什么样的',
+        text: '你过年回家的亲戚问你：“孩子，你这具体是研究什么的呀？”，你的第一反应是？',
         options: [
-          { label: '不认同', value: 1 },
-          { label: '中立', value: 2 },
-          { label: '认同', value: 3 }
+          { label: '我也想知道。我感觉自己白天是修电脑的，晚上是帮导师填表格的，深夜是给大模型下跪的。', value: 1 },
+          { label: '我会抛出一堆类似‘神经网络’、‘边缘计算’之类的名词。虽然我也不太懂，但至少能把他们唬住。', value: 2 },
+          { label: '我会用三句话总结我的科学贡献。', value: 3 }
         ]
       },
+
       {
         id: 'q4', dim: 'S2',
-        text: '我内心有真正追求的东西',
+        text: '如果让你现在换一个完全不同的选题，你会感到？',
         options: [
-          { label: '不认同', value: 1 },
-          { label: '中立', value: 2 },
-          { label: '认同', value: 3 }
+          { label: '无所谓。反正我现在这个选题也是一团乱麻，换个坑蹲着可能风景更好。', value: 1 },
+          { label: '会犹豫。虽然现在的选题很难，但我已经投入了沉没成本，而且大致的套路我已经摸熟了。', value: 2 },
+          { label: '坚决反对。我现在的研究是我长期规划的一部分，换方向等于是让我推倒重来，我绝不接受。', value: 3 }
         ]
       },
+
+      // --- S3: 价值追求 ---
       {
         id: 'q5', dim: 'S3',
-        text: '我一定要不断往上爬、变得更厉害',
+        text: '我一定要不断往上爬、去大厂卷、拿高薪、买房买车。虽然我知道这种想法很俗，但在这个热水经常断、食堂经常涨价、导师经常不发补助的鬼地方，钱是我唯一能握住的救命稻草。',
         options: [
-          { label: '不认同', value: 1 },
-          { label: '中立', value: 2 },
-          { label: '认同', value: 3 }
+          { label: '不认同，我想当咸鱼。', value: 1 },
+          { label: '中立。', value: 2 },
+          { label: '认同，搞钱第一。', value: 3 }
         ]
       },
       {
         id: 'q6', dim: 'S3',
-        text: '外人的评价对我来说无所吊谓。',
+        text: '外人的评价（比如亲戚问我毕业后工资多少）对我来说无所吊谓。',
         options: [
           { label: '不认同', value: 1 },
           { label: '中立', value: 2 },
           { label: '认同', value: 3 }
         ]
       },
+
+      // --- E1: 依恋安全感 ---
       {
         id: 'q7', dim: 'E1',
-        text: '对象超过5小时没回消息，说自己窜稀了，你会怎么想？',
+        text: '导师发了一个“？”，过了5小时没回下一句。你觉得他可能在干什么？',
         options: [
-          { label: '拉稀不可能5小时，也许ta隐瞒了我。', value: 1 },
-          { label: '在信任和怀疑之间摇摆。', value: 2 },
-          { label: '也许今天ta真的不太舒服。', value: 3 }
+          { label: '心脏骤停，把这辈子干过的烂事全反省了一遍。', value: 1 },
+          { label: '在怀疑和“他在开会”之间摇摆。', value: 2 },
+          { label: '也许他真的只是忘了发下一句，毕竟他是神谕。', value: 3 }
         ]
       },
       {
         id: 'q8', dim: 'E1',
-        text: '我在感情里经常担心被对方抛弃',
+        text: '楼下那只三花猫，当它对着你“喵”一声时，你是否觉得它比导师更懂你的孤独？',
         options: [
-          { label: '是的', value: 1 },
-          { label: '偶尔', value: 2 },
-          { label: '不是', value: 3 }
+          { label: '是的，它治愈了我。', value: 3 },
+          { label: '偶尔。', value: 2 },
+          { label: '它只是想要我的罐头。', value: 1 }
         ]
       },
+
+      // --- E2: 投入度 ---
       {
         id: 'q9', dim: 'E2',
-        text: '我对天发誓，我对待每一份感情都是认真的！',
+        text: '深夜两点，当你躺在床上即将入睡时，脑子里突然闪过一个可能解决实验报错的新思路，此时你的反应是？',
         options: [
-          { label: '并没有', value: 1 },
-          { label: '也许？', value: 2 },
-          { label: '是的！（问心无愧骄傲脸）', value: 3 }
+          { label: '关我屁事。现在的我是属于床的，科研垃圾不配占用我的美容觉时间，等明天放假回实验室再说。', value: 1 },
+          { label: '挣扎一下。拿手机备忘录记个关键词，然后继续睡，但心里会一直挂念着，睡眠质量光速下降。', value: 2 },
+          { label: '垂死病中惊坐起。翻身下床打开电脑直接远程 SSH 到服务器，不把这行代码跑通我这辈子都睡不着。', value: 3 }
         ]
       },
       {
         id: 'q10', dim: 'E2',
-        text: '你的恋爱对象是一个尊老爱幼，温柔敦厚，洁身自好，光明磊落，大义凛然，能言善辩，口才流利，观察入微，见多识广，博学多才，诲人不倦，和蔼可亲，平易近人，心地善良，慈眉善目，积极进取，意气风发，玉树临风，国色天香，倾国倾城，花容月貌的人，此时你会？',
+        text: '明天结课，三个 Project 的进度依然是 0，而此时老板给你发了条微信叫你过来，你甚至还没吃晚饭。',
         options: [
-          { label: '就算ta再优秀我也不会陷入太深。', value: 1 },
-          { label: '会介于A和C之间。', value: 2 },
-          { label: '会非常珍惜ta，也许会变成恋爱脑。', value: 3 }
+          { label: '开摆！睡觉去咯！', value: 1 },
+          { label: '强行透支生命，开启 24 小时“屎山代码”生成模式。', value: 2 },
+          { label: '这种事情不会发生在我身上。', value: 3 }
         ]
       },
+
+      // --- E3: 边界感 ---
       {
         id: 'q11', dim: 'E3',
-        text: '恋爱后，对象非常黏人，你作何感想？',
+        text: '当行政老师因为一个极其脑残的表格填错而让你跑了三趟财务处，你会？',
         options: [
-          { label: '那很爽了', value: 1 },
-          { label: '都行无所谓', value: 2 },
-          { label: '我更喜欢保留独立空间', value: 3 }
+          { label: '卑微道歉，继续当牛马。', value: 1 },
+          { label: '无所谓，习惯了。', value: 2 },
+          { label: '内心已经把行政楼炸了一百遍。', value: 3 }
         ]
       },
       {
         id: 'q12', dim: 'E3',
-        text: '我在任何关系里都很重视个人空间',
+        text: '深夜两点，你推开实验室的门，打算拿回你落下的耳机，却发现平日里那个满脸络腮胡的同门师兄，正穿着一身精致的蕾丝Lolita裙装在给显卡清灰。那一刻，你突然意识到，人类的本质其实是叠加态的。性别、学术、身份，在这一刻都随着显卡的风扇声一起消解了。',
         options: [
-          { label: '我更喜欢依赖与被依赖', value: 1 },
-          { label: '看情况', value: 2 },
-          { label: '是的！（斩钉截铁地说道）', value: 3 }
+          { label: '我心态崩了，决定假装没看见。', value: 1 },
+          { label: '中立。这说明他在进行一种极深维度的学术伪装。', value: 2 },
+          { label: '我不仅反手就是一个赞，还当场掏出手机求链接，准备加入这场赛博飞升，嘿嘿。', value: 3 }
         ]
       },
+
+      // --- A1: 世界观 ---
       {
         id: 'q13', dim: 'A1',
-        text: '大多数人是善良的',
+        text: '你的期末大作业被查重系统爆红，相似度高达99.8%，连注释都和同学一模一样。面对助教的死亡质问，你的反应是：',
         options: [
-          { label: '其实邪恶的人心比世界上的痔疮更多。', value: 1 },
-          { label: '也许吧。', value: 2 },
-          { label: '是的，我愿相信好人更多。', value: 3 }
+          { label: '感觉这辈子已经走到了学术终点，呜呜。', value: 1 },
+          { label: '熟练滑跪。', value: 2 },
+          { label: '这是因为我们都调用了开源大模型的API，这是人工智能时代的趋同进化！', value: 3 }
         ]
       },
       {
         id: 'q14', dim: 'A1',
-        text: '你走在街上，一位萌萌的小女孩蹦蹦跳跳地朝你走来（正脸、侧脸看都萌，用vivo、苹果、华为、OPPO手机看都萌，实在是非常萌的那种），她递给你一根棒棒糖，此时你作何感想？',
+        text: '当你辛苦修改了三个月、自认为“惊为天人”的论文被审稿人以“缺乏创新性”为由直接拒稿（Reject）时，你的第一感觉是？',
         options: [
-          { label: '呜呜她真好真可爱！居然给我棒棒糖！', value: 3 },
-          { label: '一脸懵逼，作挠头状', value: 2 },
-          { label: '这也许是一种新型诈骗？还是走开为好。', value: 1 }
+          { label: '意料之中。垃圾论文被拒不是很正常吗？我甚至想帮审稿人一起骂。走，今天不去实验室了，去打网游。', value: 1 },
+          { label: '心隐隐作痛。像是个老父亲看着孩子被邻居骂了，虽然难受但还得一边抹泪一边熬夜准备转投。', value: 2 },
+          { label: '心碎了一地。我觉得我的灵魂被否定了，这种感觉比失恋还难受，我甚至想给审稿人写一封长达 5000 字的自白信来解释我的心路历程。', value: 3 }
         ]
       },
+
+      // --- A2: 规则度 ---
       {
         id: 'q15', dim: 'A2',
-        text: '快考试了，学校规定必须上晚自习，请假会扣分，但今晚你约了女/男神一起玩《绝地求生：刺激战场》（一款刺激的游戏），你怎么办？',
+        text: '导师要求你用一种极其繁琐、过时的方法去验证一个结论，而你明明知道有一种更新、更快的工具可以直接出结果，你会？',
         options: [
-          { label: '翘了！反正就一次！', value: 1 },
-          { label: '干脆请个假吧。', value: 2 },
-          { label: '都快考试了还去啥。', value: 3 }
+          { label: '严格按导师说的做。既然老板发话了，必然有其道理，哪怕效率低一点，我也要保证过程的‘政治正确’。', value: 1 },
+          { label: '先斩后奏。用新工具偷偷把结果跑出来，如果老板问起，就说两种方法都试了，只是老方法‘报错了’。', value: 2 },
+          { label: '直接无视。规则是死的人是活的，只要我能把漂亮的结果甩在老板脸上，过程怎么乱来都无所谓。', value: 3 }
         ]
       },
       {
         id: 'q16', dim: 'A2',
-        text: '我喜欢打破常规，不喜欢被束缚',
+        text: '你在复现一篇顶会论文时，发现只有当把随机种子（Random Seed）固定在某个特定数字时，结果才漂亮。在写你自己的论文时，你会？',
         options: [
-          { label: '认同', value: 1 },
-          { label: '保持中立', value: 2 },
-          { label: '不认同', value: 3 }
+          { label: '如实记录。必须在论文中注明该结果对随机种子的依赖性，不能误导后来的研究者。', value: 1 },
+          { label: '春秋笔法。只写‘经过多次实验取平均值’，掩盖掉那个特殊的种子，让数据看起来更具有普适性。', value: 2 },
+          { label: '这叫技巧。炼丹（Deep Learning）的事能叫欺骗吗？这叫‘超参数调优’，只要我不说，没人知道规则被我玩明白了。', value: 3 }
         ]
       },
+
+      // --- A3: 意义感 ---
       {
         id: 'q17', dim: 'A3',
-        text: '我做事通常有目标。',
+        text: '开题报告（或中期考核）即将来临，你需要面对专家组陈述你的“创新点”，此时你的状态是？',
         options: [
-          { label: '不认同', value: 1 },
-          { label: '中立', value: 2 },
-          { label: '认同', value: 3 }
+          { label: '极度心虚。我觉得我的创新点就像皇帝的新衣，我必须用 50 页 PPT 的花哨排版来掩盖核心内容的空洞。', value: 1 },
+          { label: '有点拿不准。我觉得我的东西有改进，但说它是‘重大创新’总觉得脸红，只能尽量往大框架上靠。', value: 2 },
+          { label: '信心满满。我甚至期待专家组提问，因为我对该方向的边界和我的独特贡献已经推演过无数次。', value: 3 }
         ]
       },
       {
         id: 'q18', dim: 'A3',
-        text: '突然某一天，我意识到人生哪有什么他妈的狗屁意义，人不过是和动物一样被各种欲望支配着，纯纯是被激素控制的东西，饿了就吃，困了就睡，一发情就想交配，我们简直和猪狗一样没什么区别。',
+        text: '某一天凌晨两点，热水停了，施工的挖掘机还在轰鸣。你突然意识到：人读博读硕哪有什么意义？不过是和动物一样被毕业的欲望支配着，纯纯是被那几张纸控制的东西，饿了就点外卖，困了就工位躺，一发情就想去别的实验室面基，我们和楼下的流浪猫除了会写Bug外真的没什么区别。',
         options: [
-          { label: '是这样的。', value: 1 },
+          { label: '是这样的，透彻。', value: 1 },
           { label: '也许是，也许不是。', value: 2 },
-          { label: '这简直是胡扯', value: 3 }
+          { label: '这简直是胡扯。', value: 3 }
         ]
       },
+
+      // --- Ac1-Ac3: 行动驱力模型 ---
       {
         id: 'q19', dim: 'Ac1',
-        text: '我做事主要为了取得成果和进步，而不是避免麻烦和风险。',
+        text: '你的实验结果目前看起来处于“投顶会概率对半开”和“投水刊稳中”之间，你会？',
         options: [
-          { label: '不认同', value: 1 },
-          { label: '中立', value: 2 },
-          { label: '认同', value: 3 }
+          { label: '稳字当头。只要能拿个毕业证就行，那种‘九死一生’的顶会博弈太消耗我脆弱的神经了。', value: 1 },
+          { label: '先冲后保。先试一把顶会，不行再降档投，虽然折腾但万一中了呢？', value: 2 },
+          { label: '非顶不投。研究生生涯如果没冲过该领域的巅峰，那跟咸鱼有什么区别？我就是为了赢才来的。', value: 3 }
         ]
       },
       {
         id: 'q20', dim: 'Ac1',
-        text: '你因便秘坐在马桶上（已长达30分钟），拉不出很难受。此时你更像',
+        text: '导师给你分配了一个全新的、目前还没有人做出来的方向，这意味着你要面临半年的“零产出”和无数次失败，你会？',
         options: [
-          { label: '再坐三十分钟看看，说不定就有了。', value: 1 },
-          { label: '用力拍打自己的屁股并说：“死屁股，快拉啊！”', value: 2 },
-          { label: '使用开塞露，快点拉出来才好。', value: 3 }
+          { label: '想办法撤退。这种风险太大了，我宁愿去做一些稳稳能出结果的重复性劳动，安全第一。', value: 1 },
+          { label: '先干着看。边做边观察，如果三个月没起色就跟导师申请换题，绝不在一棵树上吊死。”', value: 2 },
+          { label: '异常兴奋。越没人做的东西越有搞头，万一做出来了就是开山鼻祖，我最讨厌拾人牙慧。', value: 3 }
         ]
       },
       {
         id: 'q21', dim: 'Ac2',
-        text: '我做决定比较果断，不喜欢犹豫',
+        text: '我做决定比较果断，比如直接删除那组看着就想吐的数据。',
         options: [
           { label: '不认同', value: 1 },
           { label: '中立', value: 2 },
@@ -991,52 +1356,54 @@
       },
       {
         id: 'q22', dim: 'Ac2',
-        text: '此题没有题目，请盲选',
+        text: '当你的代码报了一个Error，且你检查了半小时也没发现逻辑错误时，你会？',
         options: [
-          { label: '反复思考后感觉应该选A？', value: 1 },
-          { label: '啊，要不选B？', value: 2 },
-          { label: '不会就选C？', value: 3 }
+          { label: '直接把报错扔进 DeepSeek/ChatGPT 盲目尝试各种修改，祈祷某个瞬间它能奇迹般跑通。', value: 1 },
+          { label: '常规排查。在所有可疑的地方疯狂 print 或者打断点，虽然效率不高，但主打一个地毯式搜索。', value: 2 },
+          { label: '常规排查。在所有可疑的地方疯狂 print 或者打断点，虽然效率不高，但主打一个地毯式搜索。', value: 3 }
         ]
       },
       {
         id: 'q23', dim: 'Ac3',
-        text: '别人说你“执行力强”，你内心更接近哪句？',
+        text: '假如 50 年后，你现在写的论文已经过时，没有人看，连同你跑过实验的那块显卡也变成了电子垃圾，你此时的感觉是？',
         options: [
-          { label: '我被逼到最后确实执行力超强。。。', value: 1 },
-          { label: '啊，有时候吧。', value: 2 },
-          { label: '是的，事情本来就该被推进', value: 3 }
+          { label: '一种解脱。反正那也是我为了毕业制造的学术垃圾，消失了是对地球资源的保护。', value: 1 },
+          { label: '有点遗憾。虽然没什么大用，但那好歹是我青春秃顶的见证，就像路边的野草枯萎了一样。', value: 2 },
+          { label: '无法接受。我坚信我的逻辑思想已经通过某种方式改变了信息熵的分布，它应该永恒。', value: 3 }
         ]
       },
       {
         id: 'q24', dim: 'Ac3',
         text: '我做事常常有计划，____',
         options: [
-          { label: '然而计划不如变化快。', value: 1 },
+          { label: '然而计划不如导师的想法变卦快。', value: 1 },
           { label: '有时能完成，有时不能。', value: 2 },
           { label: '我讨厌被打破计划。', value: 3 }
         ]
       },
+
+      // --- So1-So3: 社交模型 ---
       {
         id: 'q25', dim: 'So1',
-        text: '你因玩《第五人格》（一款刺激的游戏）而结识许多网友，并被邀请线下见面，你的想法是？',
+        text: '学术会议茶歇，你穿着T恤牛仔裤在一群西装革履的大佬中间。',
         options: [
-          { label: '网上口嗨下就算了，真见面还是有点忐忑。', value: 1 },
-          { label: '见网友也挺好，反正谁来聊我就聊两句。', value: 2 },
-          { label: '我会打扮一番并热情聊天，万一呢，我是说万一呢？', value: 3 }
+          { label: '满脑子都在想哪种口味的马卡龙更好吃。', value: 1 },
+          { label: '默默的坐在角落里刷手机。', value: 2 },
+          { label: '加入他们。', value: 3 }
         ]
       },
       {
         id: 'q26', dim: 'So1',
-        text: '朋友带了ta的朋友一起来玩，你最可能的状态是',
+        text: '导师带了别校的大牛来参观实验室，你最可能的状态是：',
         options: [
-          { label: '对“朋友的朋友”天然有点距离感，怕影响二人关系', value: 1 },
-          { label: '看对方，能玩就玩。', value: 2 },
-          { label: '朋友的朋友应该也算我的朋友！要热情聊天', value: 3 }
+          { label: '躲在显示器后面，假装代码很忙。', value: 1 },
+          { label: '礼貌微笑。', value: 2 },
+          { label: '冲上去展示我的Demo。', value: 3 }
         ]
       },
       {
         id: 'q27', dim: 'So2',
-        text: '我和人相处主打一个电子围栏，靠太近会自动报警。',
+        text: '我和同门相处主打一个电子围栏，戴上耳机就是我的领土，严禁入侵。',
         options: [
           { label: '认同', value: 3 },
           { label: '中立', value: 2 },
@@ -1045,7 +1412,7 @@
       },
       {
         id: 'q28', dim: 'So2',
-        text: '我渴望和我信任的人关系密切，熟得像失散多年的亲戚。',
+        text: '我渴望和导师关系密切，熟得像失散多年的异父异母亲生父子。',
         options: [
           { label: '认同', value: 1 },
           { label: '中立', value: 2 },
@@ -1054,424 +1421,404 @@
       },
       {
         id: 'q29', dim: 'So3',
-        text: '有时候你明明对一件事有不同的、负面的看法，但最后没说出来。多数情况下原因是：',
+        text: '有时候你明明对一个脑残的学校规定有极大的不满，但最后没说出来，原因是：',
         options: [
           { label: '这种情况较少。', value: 1 },
-          { label: '可能碍于情面或者关系。', value: 2 },
-          { label: '不想让别人知道自己是个阴暗的人。', value: 3 }
+          { label: '怕得罪行政老师。', value: 2 },
+          { label: '不想让别人知道自己是个阴暗的杠精。', value: 3 }
         ]
       },
       {
         id: 'q30', dim: 'So3',
-        text: '我在不同人面前会表现出不一样的自己',
+        text: '学院请来了一位顶级大牛开讲座，提问环节全场死寂，而你恰好有一个不太成熟的小想法，你会？',
         options: [
-          { label: '不认同', value: 1 },
-          { label: '中立', value: 2 },
-          { label: '认同', value: 3 }
+          { label: '坚决闭嘴。这种场合开口万一说错了，那就是在整个信院丢脸，我宁愿把想法烂在肚子里。', value: 1 },
+          { label: '看看情况。如果有别人先提问，我就顺便跟着问一个；如果没人提，我就继续低头玩手机。', value: 2 },
+          { label: '直接举手。大牛也是人，这是难得的‘混脸熟’机会，就算问得浅，也要展现出我积极思考的形象。', value: 3 }
         ]
       }
     ];
+
     const specialQuestions = [
       {
-        id: 'drink_gate_q1',
+        id: 'intern_gate_q1',
         special: true,
         kind: 'drink_gate',
-        text: '您平时有什么爱好？',
+        text: '你觉得你现在血管里流淌的液体，主要是哪种成分？',
         options: [
-          { label: '吃喝拉撒', value: 1 },
-          { label: '艺术爱好', value: 2 },
-          { label: '饮酒', value: 3 },
-          { label: '健身', value: 4 }
+          { label: '高纯度咖啡因和浓缩肾上腺素。', value: 1 },
+          { label: '由瑞幸、喜茶和外卖构成的混合能量流。', value: 2 },
+          { label: '一些正在报错的底层逻辑，以及对世界真实性的怀疑。', value: 3 },
+          { label: '试图维持生命的纯净水（但这很罕见）。', value: 4 }
         ]
       },
       {
-        id: 'drink_gate_q2',
+        id: 'intern_gate_q2',
         special: true,
         kind: 'drink_trigger',
-        text: '您对饮酒的态度是？',
+        text: '（系统警告：检测到精神频率异常）假如某天深夜，你发现你所研究的整个学科其实只是高维文明为了观测“碳基生物如何在逻辑死循环中挣扎”而设计的一场模拟。你所有的论文、代码和实验数据，都只是这个系统产生的 Log 日志。此时，你最想向这个系统的“管理员”发送哪条指令？',
         options: [
-          { label: '小酌怡情，喝不了太多。', value: 1 },
-          { label: '我习惯将白酒灌在保温杯，当白开水喝，酒精令我信服。', value: 2 }
+          { label: 'git commit -m "I was here"（留下我的注脚）', value: 1 },
+          { label: 'sudo rm -rf /（格式化这虚伪的世界）', value: 2 }
         ]
       }
     ];
 
     const TYPE_LIBRARY = {
-  "CTRL": {
-    "code": "CTRL",
-    "cn": "拿捏者",
-    "intro": "怎么样，被我拿捏了吧？",
-    "desc": "恭喜您，您测出了全中国最为罕见的人格，您是宇宙熵增定律的天然反抗者！全世界所谓成功人士里，99.99%都是您的拙劣模仿者。CTRL人格，是行走的人形自走任务管理器，普通人眼中的“规则”，在您这里只是出厂的基础参数设置；凡人所谓的“计划”，对您而言不过是心血来潮的随手涂鸦。拥有一个CTRL朋友意味着什么？意味着你的人生导航系统会变得更加精准、高效。因为CTRL最会拿捏了。CTRL会在你人生列车即将脱轨的前一秒，用一个“Ctrl+S”帮你硬核存档，再用一套无法拒绝的逻辑把你强行拽回正轨。他们是你混乱生活最后的备份盘，是宇宙崩塌前唯一还亮着的那个重启键。"
-  },
-  "ATM-er": {
-    "code": "ATM-er",
-    "cn": "送钱者",
-    "intro": "你以为我很有钱吗？",
-    "desc": "恭喜您，您竟然测出了这个世界上最稀有的人格。您或将成为金融界的未解之谜——是的，ATM-er不一定真的“送钱”，但可能永远在“支付”。支付时间、支付精力、支付耐心、支付一个本该安宁的夜晚。因此像一部老旧但坚固的ATM机，插进去的是别人的焦虑和麻烦，吐出来的是“没事，有我”的安心保证。您的人生就是一场盛大的、无人喝彩的单人付账秀。您竟用磐石般的可靠，承受了瀑布般的索取，偶尔夜深人静才会对着账单——可能是精神上的——发出一声叹息：我这该死的、无处安放的责任心啊。"
-  },
-  "Dior-s": {
-    "code": "Dior-s",
-    "cn": "屌丝",
-    "intro": "等着我屌丝逆袭。",
-    "desc": "恭喜！您并非屌丝，您是犬儒主义先贤第欧根尼失散多年的精神传人，因为屌丝的全称是 Diogenes' Original Realist - sage。Dior-s人格，是对当代消费主义陷阱和成功学PUA最彻底的蔑视。他们不是“不求上进”，而是早已看穿一切“上进”的尽头不过是更高级的牢房。屌丝有着大智慧。当别人在追逐风口，被时代的巨浪拍得七荤八素时，Dior-s早已在自己的精神木桶里晒着太阳，达到了“人桶合一”的至高境界。他们信奉的不是空话，是经过亿万次实践检验的物理法则与生物本能：一、躺着比站着舒服；二、饭点到了就得干饭。"
-  },
-  "BOSS": {
-    "code": "BOSS",
-    "cn": "领导者",
-    "intro": "方向盘给我，我来开。",
-    "desc": "BOSS是一个手里永远拿着方向盘的人。哪怕油箱已经亮了红灯，哪怕导航在胡说八道，你都会面无表情地说一句：我来开。然后真的把车开到了目的地。该人格拥有独立的物理法则——永恒向上定律。BOSS人格看世界，就像玩通关了的玩家在看新手教程。效率是他们的信仰，秩序是他们的呼吸。他们不是“自带领袖气场”，他们本身就是人形的气场发生器，方圆五米内，空气都会自动变得严肃而高效。他们眼中的“自我突破”，约等于普通人眼中的“自虐”。今天掌握一门新语言，明天考下一个专业证书，后天就计划殖民火星。你说这太卷了，他会用一种看弱鸡的眼神看着你：不是我太狠，是你太松。"
-  },
-  "THAN-K": {
-    "code": "THAN-K",
-    "cn": "感恩者",
-    "intro": "我感谢苍天！我感谢大地！",
-    "desc": "恭喜您，您测出了全中国最为罕见的人格。您应当感谢我！感谢您在此刻拥有了生命的滋润！倘若您上班路上堵车了？您也应当说一句：我感谢这次堵车，它让我有更多时间聆听这首美妙的歌曲，并欣赏窗外每一张因焦虑而扭曲的脸庞，让我更珍惜内心的平静。是的，THAN-K拥有温润如玉的性格和海纳百川的胸怀。他们眼中的世界没有完全的坏人，只有“尚未被感恩光芒照耀到的朋友”。拥有一个THAN-K朋友，就像身边多了一个永不枯竭的正能量发射塔。TA甚至能帮你从墙角的霉斑里发现一幅梵高风格的星空图。"
-  },
-  "OH-NO": {
-    "code": "OH-NO",
-    "cn": "哦不人",
-    "intro": "哦不！我怎么会是这个人格？！",
-    "desc": "“哦不！”并非恐惧的尖叫，而是一种顶级的智慧。当普通人看到一个杯子放在桌沿，哦不人看到的是一场由“水渍-短路-火灾-全楼疏散-经济损失-蝴蝶效应-世界末日”构成的灾难史诗。于是，伴随着一声发自灵魂深处的 Oh, no!，他们会以迅雷不及掩耳之势把杯子挪到桌子正中央，然后再垫上一张吸水杯垫。哦不人对“边界”有一种近乎偏执的尊重：你的就是你的，我的就是我的。所有意外和风险都已经在他的“Oh, no!”声中，被扼杀在了萌芽状态。他们是秩序的守护神，是混乱世界里最后那批神经绷得很直的体面人。"
-  },
-  "GOGO": {
-    "code": "GOGO",
-    "cn": "行者",
-    "intro": "gogogo~出发咯",
-    "desc": "经研究发现，GOGO人格的大脑构造与常人有根本性不同。GOGO活在一个极致的“所见即所得”世界里，人生信条简单粗暴到令人发指：只要我闭上眼睛，天就是黑的；只要我把钱都花了，我就没有钱了；只要我站在斑马线上，我现在就是行人了。逻辑完美闭环，根本无法反驳。别人还在为“先有鸡还是先有蛋”而辩论，GOGO行者已经把鸡和蛋一起做成了一盘“鸡生蛋，蛋生鸡之终极奥义盖浇饭”。他们不是在“解决问题”，他们是在“清除待办事项”。对他们来说，世界上只有两种状态：已完成，和即将被我完成。"
-  },
-  "SEXY": {
-    "code": "SEXY",
-    "cn": "尤物",
-    "intro": "您就是天生的尤物！",
-    "desc": "当您走进一个房间，照明系统会自动将您识别为天生的尤物，并自觉调暗亮度，以避免能源浪费。当您微笑时，您就变成了微笑着的尤物，周围的空气湿度也会显著下降，因为水蒸气都凝结成了人眼中的爱心。无论是谁，都容易对您的存在产生一种超标的注意力。传说，如果有足够多的SEXY人格聚集在一起开派对，其释放出的综合魅力能量足以暂时扭曲时空结构，让参加者产生“时间变慢了”的幸福错觉。他们不需要卖力表达，很多时候，单是存在本身就已经很像一篇华丽到过分的赋。"
-  },
-  "LOVE-R": {
-    "code": "LOVE-R",
-    "cn": "多情者",
-    "intro": "爱意太满，现实显得有点贫瘠。",
-    "desc": "LOVE-R人格像远古神话时代幸存至今的珍稀物种，其存在概率比你在马桶里钓到作者胳膊的概率还低。您简直是这个钢铁森林时代最后的、也是最不合时宜的吟游诗人。因为您的情感处理器不是二进制的，而是彩虹制的。一片落叶，在常人眼里只是“秋天来了”，在LOVE-R眼中，则是一场关于轮回、牺牲与无言之爱的十三幕悲喜剧。您内心世界像一座永不关门的主题公园，一生都在寻找那个能看懂园区地图、并愿意陪你坐旋转木马直到宇宙尽头的灵魂伴侣。"
-  },
-  "MUM": {
-    "code": "MUM",
-    "cn": "妈妈",
-    "intro": "或许...我可以叫你妈妈吗....?",
-    "desc": "恭喜您，您测出了全中国最稀有的妈妈人格。是的，在混沌未开、时间尚无姓名之前，在第一颗恒星打出第一个嗝之前，就已经有了妈妈。妈妈人格的底色是温柔，擅长感知情绪，具有超强共情力，知道什么时候该停下来，什么时候该对自己说一句“算了”。妈妈像一个医生，治愈了别人的不开心。只可惜，当妈妈落泪时，TA给自己的药，剂量总是比给别人小一号。MUM对自己的温柔，常常打了折。"
-  },
-  "FAKE": {
-    "code": "FAKE",
-    "cn": "伪人",
-    "intro": "已经，没有人类了。",
-    "desc": "SCP基金会紧急报告：项目编号 SCP-CN-████ “伪人”。在社交场合，伪人是八面玲珑的存在，因为他们切换人格面具比切换手机输入法还快。上一秒还是推心置腹的铁哥们模式，下一秒领导来了，瞬间切换成沉稳可靠好员工模式，连脸上的光泽度和卷曲度都会发生微调。你以为你交到了一个真心懂你的朋友？醒醒。你只是幸运地遇到了一个善于伪装、高性能的仿生人罢了。夜深人静时，伪人把面具一层层摘下来，最后才发现，面具下空得很，正是这些面具构成了自己。"
-  },
-  "OJBK": {
-    "code": "OJBK",
-    "cn": "无所谓人",
-    "intro": "我说随便，是真的随便。",
-    "desc": "让我们直面这个词的粗犷本质：OJBK。这已经不是一种人格，而是一种统治哲学。当凡人面临“中午吃米饭还是面条”的世纪抉择时，大脑在激烈燃烧卡路里；而OJBK人格，会用一种批阅奏章般的淡然，轻飘飘地吐出两个字：都行。这不是没主见，这是在告诉你：尔等凡俗的选择，于朕而言，皆为蝼蚁。为什么不争执？因为跟草履虫辩论宇宙的未来毫无意义。为什么不较真？因为帝王不会在意脚下的尘埃是往左飘还是往右飘。"
-  },
-  "MALO": {
-    "code": "MALO",
-    "cn": "吗喽",
-    "intro": "人生是个副本，而我只是一只吗喽。",
-    "desc": "朋友，你不是“童心未泯”，你压根就没进化。你的灵魂还停留在那个挂在树上荡秋千、看见香蕉就两眼放光的快乐时代。当人类祖先决定从树上下来、学会直立行走、穿上西装打领带时，吗喽人格的祖先在旁边的大树上看着他们，挠了挠屁股，嘴里发出一声不屑的“吱”。他们看透了一切：所谓的“文明”，不过是一场最无聊、最不好玩的付费游戏。规则偶尔是可以打破的，天花板是用来倒挂的，会议室是用来表演后空翻的。MALO本身就是一个从巨大脑洞里掉出来、忘了关门的奇思妙想。"
-  },
-  "JOKE-R": {
-    "code": "JOKE-R",
-    "cn": "小丑",
-    "intro": "原来我们都是小丑。",
-    "desc": "请注意，JOKE-R人格不是一个“人”，更像一个把笑话穿在身上的小丑。你打开一层，是个笑话；再打开一层，是个段子；你一层层打开，直到最后，你发现最里面……是空的，只剩下一点微弱的回声在说：哈，没想到吧。JOKE-R是社交场合的气氛组组长兼唯一指定火力输出。有他们在，场子就不会冷。所有人前仰后合地笑着，而笑得最开心的，往往也是他们自己——用最大的笑声，盖住心碎的声音。"
-  },
-  "WOC!": {
-    "code": "WOC!",
-    "cn": "握草人",
-    "intro": "卧槽，我怎么是这个人格？",
-    "desc": "我们发现了一种神奇的生物——WOC!人。他们拥有两种完全独立的操作系统：一个叫“表面系统”，负责发出“我操”“牛逼”“啊？”等一系列大惊小怪的拟声词；另一个叫“后台系统”，负责冷静分析：嗯，果然不出我所料。WOC!人只会卧槽，不会多管闲事，因为他们深知，给傻逼讲道理，就像扶着烂泥上墙，不仅浪费体力，还弄自己一手屎。所以他们选择，握着一根智慧的大草，用一声饱含深情的“WOC！”来为这个疯狂的世界献上最高敬意。"
-  },
-  "THIN-K": {
-    "code": "THIN-K",
-    "cn": "思考者",
-    "intro": "已深度思考100s。",
-    "desc": "经研究发现，THIN-K人格的大脑构造与常人有根本性不同。正如名称所示，您的大脑长时间处于思考状态。您十分会审判信息，注重论点、论据、逻辑推理、潜在偏见，乃至“作者本人三代以内思想背景调查报告”的全套材料。在这个信息爆炸的时代，您绝不会轻易盲从，会在关系中衡量利弊，也十分捍卫自己的自我空间。当别人看到您独处时在发呆？愚蠢，那不是发呆，那是您的大脑正在对今天接收到的所有信息进行分类、归档和销毁。"
-  },
-  "SHIT": {
-    "code": "SHIT",
-    "cn": "愤世者",
-    "intro": "这个世界，构石一坨。",
-    "desc": "恭喜您，SHIT人格是宇宙中已知的唯一一种稀有人格。所谓狗屎，并不是在抱怨，而是在进行一种神秘仪式。SHIT的行为模式是一场惊天动地的悖论戏剧。嘴上：这个项目简直是屎。手上：默默打开 Excel，开始建构函数模型和甘特图。嘴上：这帮同事都是 shit。手上：在同事搞砸之后，一边烦着，一边熬夜把烂摊子收拾得明明白白。嘴上：这个世界就是一坨 shit，赶紧毁灭吧。手上：第二天早上七点准时起床，挤上 shit 一样的地铁，去干那份 shit 一样的工作。别怕，那不是世界末日的警报，那是他马上要开始拯救世界的冲锋号。"
-  },
-  "ZZZZ": {
-    "code": "ZZZZ",
-    "cn": "装死者",
-    "intro": "我没死，我只是在睡觉。",
-    "desc": "恭喜您，您测出了全中国最稀有的装死人格。群里99+条消息您可以视而不见，但当有人发出“@全体成员 还有半小时就截止了”的最后通牒时，您也许会像刚从千年古墓里苏醒一样，缓缓地敲出一个“收到”，然后在29分钟内，交出一份虽然及格的答卷。是的，直到“死线”这个唯一的、最高权限的指令出现，您就真正爆发了，不鸣则已，一鸣惊人。您向宇宙证明了一个真理：有时什么都不做，就不会做错。"
-  },
-  "POOR": {
-    "code": "POOR",
-    "cn": "贫困者",
-    "intro": "我穷，但我很专。",
-    "desc": "恭喜您，您测出了【POOR - 贫困者】。这个“贫困”不是钱包余额的判决书，更像一种欲望断舍离后的资源再分配。别人把精力撒成漫天二维码，你把精力压成一束激光，照哪儿，哪儿就开始冒烟。POOR的世界很简单：不重要的东西一律降噪，重要的东西狠狠干到底。热闹、社交、虚荣、到处刷存在感？抱歉，没空。你不是资源少，你是把资源全部灌进了一个坑里，所以看起来像贫困，实际上像矿井。一旦某件事被你认定值得钻，外界再吵也只是背景杂音。"
-  },
-  "MONK": {
-    "code": "MONK",
-    "cn": "僧人",
-    "intro": "没有那种世俗的欲望。",
-    "desc": "当别人在KTV里参悟爱与恨的纠缠，MONK人格选择在家中参悟一份大道。MONK已然看破红尘，不希望闲人来扰其清修、破其道行。MONK的个人空间，是他们的结界，是他们的须弥山，是他们的绝对领域，神圣不可侵犯。踏入者，会感受到一种来自灵魂深处的窒息感。MONK们不黏不缠，因为在他们的世界观里，万物皆有其独立轨道。行星与行星之间保持着亿万公里的距离，才构成和谐宇宙，人与人之间为什么不行？"
-  },
-  "IMSB": {
-    "code": "IMSB",
-    "cn": "傻者",
-    "intro": "认真的么？我真的是傻逼么？",
-    "desc": "恭喜您！您根本不在人类范畴内！您测出了百万年一遇的【IMSB】人格。IMSB人格的大脑里住着两个不死不休的究极战士：一个叫“我他妈冲了！”，另一个叫“我是个傻逼！”。当IMSB面对一个有好感的人时，前者会说：冲啊！去要微信！去约饭！爱要大声说出来！后者接着说：人家凭什么看得上你？你去了就是自取其辱！最终结果：盯着对方背影直到消失，然后掏出手机搜索“如何克服社交恐惧症”。IMSB不是真的傻，只是您的内心戏，可能比漫威宇宙所有电影加起来都长。"
-  },
-  "SOLO": {
-    "code": "SOLO",
-    "cn": "孤儿",
-    "intro": "我哭了，我怎么会是孤儿？",
-    "desc": "恭喜您，您测出了全中国最稀有的【SOLO - 孤儿】人格。别急着哭，国王的加冕仪式，通常都是一个人。孤儿的自我价值感偏低，因此有时主动疏远他人，孤儿们在自己的灵魂外围建起了一座名为“莫挨老子”的万里长城。每一块砖，都是过去的一道伤口。孤儿就像一只把所有软肋都藏起来，然后用最硬的刺对着世界的刺猬。那满身的尖刺不是攻击，那是一句句说不出口的“别过来，我怕你也受伤”和“求求你，别离开”。"
-  },
-  "FUCK": {
-    "code": "FUCK",
-    "cn": "草者",
-    "intro": "操！这是什么人格？",
-    "desc": "恭喜您！您根本不在人类范畴内！您测出了百万年一遇的【FUCK】人格。人类文明城市里，出现了一株无法被任何除草剂杀死的、具有超级生命力的人形野草——那就是草者人格。它的学名，就叫 FUCK。在FUCK的世界观里，世俗规则简直毫无意义，并且FUCK的情绪开关是物理拨片式的：FUCK YEAH 和 FUCK OFF。FUCK追求的不只是当下快感，也在追求一种在体内横冲直撞的生命力。当所有人都被驯化成了温顺家禽，FUCK则是荒野上最后那一声狼嚎。"
-  },
-  "DEAD": {
-    "code": "DEAD",
-    "cn": "死者",
-    "intro": "我，还活着吗？",
-    "desc": "恭喜您，您测出了全中国最为罕见的人格，只是“死者”这个名字实在有点晦气，所以也可以叫：Don't Expect Any Drives。死者已经看透了那些无意义的哲学思考，因此显得对一切“失去”了兴趣。死者们看世界的眼神，就像一位顶级玩家通关了所有主线、支线、隐藏任务，删档重开了999次之后，终于发现：这游戏压根就没意思。死者是超越了欲望和目标的终极贤者。他们的存在，就是对这个喧嚣世界最沉默也最彻底的抗议。"
-  },
-  "IMFW": {
-    "code": "IMFW",
-    "cn": "废物",
-    "intro": "我真的...是废物吗？",
-    "desc": "恭喜您，您测出的不是一个普通人格，您是一种极其珍稀的、仅占世界人口0.0001％的——【废物】。废物们的自尊通常有些脆弱，缺乏安全感，偶尔也会缺乏主见，因此这种人格能精确地感知到周围最强的那个 WiFi 信号——也就是他们心里最可靠的人。走进【废物】人格的生活，就像走进了一个顶级兰花温室：需要精确控制温度、湿度，以及每天定时进行“我爱你”的言语光合作用。给废物一颗糖，他们会还你一个完全信任你、亮晶晶的眼神。你未必是废物，你只是太没防备，太容易认真。"
-  },
-  "HHHH": {
-    "code": "HHHH",
-    "cn": "傻乐者",
-    "intro": "哈哈哈哈哈哈。",
-    "desc": "恭喜您！由于您的思维回路过于清奇，标准人格库已全面崩溃。第一人格匹配率只有60％以下时，系统才会为您强制匹配这个人格——【HHHH - 傻乐者】。这个人格有什么特质？哈哈哈哈哈哈哈哈哈哈哈哈！对不起，这就是全部的特质了。您可以查看十五维度进行不专业的评估，实在是抱歉！作者设置人格时没有考虑全面，因此才会出现这样的状况。哈哈哈哈哈哈……笑着笑着，我便哭了出来。怎么会有人的脑回路这么新奇。"
-  },
-  "DRUNK": {
-    "code": "DRUNK",
-    "cn": "酒鬼",
-    "intro": "烈酒烧喉，不得不醉。",
-    "desc": "您为什么走路摇摇晃晃？您为什么总是情绪高涨？您为什么看东西是重影的？因为您体内流淌的不是血液，是美味的五粮液！是国窖1573！是江小白！是陕西五粮液！哦，美味的白酒，每一滴都在燃烧，都在沸腾。您是否已经习惯了将白酒灌入保温杯，当作白开水一饮而下？多么伟大的白酒！它让您在饭桌上谈笑风生，在厕所里抱着马桶忏悔人生；它让您觉得自己是夜场诗人，是宇宙中心那团不灭的火，直到第二天上午十点，您的头像裂开的核桃，嘴角挂着食物残渣，灵魂缩在角落里。您终于明白，昨晚那个高谈阔论、拍桌怒吼的人，已经成为了一个酒鬼。"
-  }
-};
+      "CTRL": {
+        "code": "CTRL",
+        "cn": "保存狂魔",
+        "intro": "Ctrl+S 是我唯一的安全感。",
+        "desc": "你不是在控制生活，你是在预防系统崩溃。对于 CTRL 来说，世界是一个充满了 Bug 的大型仿真环境。你的手指永远悬停在保存键上，因为你深知无论代码还是人生，如果不及时存档，下一秒就会遭遇 Kernel Panic。你那精准的逻辑和强迫症般的版本管理，让你在导师眼里是可靠的‘人形脚本’，在同学眼里是活着的‘Git 仓库’。你唯一的恐惧是：万一宇宙没法 Ctrl+Z 怎么办？"
+      },
+      "PHD": {
+        "code": "PHD",
+        "cn": "永久头秃者",
+        "intro": "P.H.D 其实是 Permanent Head Damage。",
+        "desc": "恭喜你，你选择了研究生院最硬核的修仙路径。PHD 人格拥有将咖啡因直接转化为论文草稿的生物奇迹。你眼中的世界不再是色彩，而是偏微分方程和收敛曲线。你甚至怀疑自己是不是导师为了发顶刊而训练出的一个具有高随机性的智能 Agent。你的人生就像一个陷入了局部最优解的梯度下降过程，明明知道山顶在远方，却在当前的坑里打转了四年，并称之为‘学术探索’。"
+      },
+      "MASTER": {
+        "code": "MASTER",
+        "cn": "毕业潜逃者",
+        "intro": "我来，我见，我拿学位证就跑。",
+        "desc": "对于 MASTER 来说，研一叫‘仰望星空’，研二叫‘脚踏实地’，研三叫‘只要能毕业，我愿意当场下跪’。你的人生目标非常明确：以最小的 Loss 值通过预答辩。你熟练掌握‘如何用最短的时间写出一本看起来很厚但全是废话的开题报告’。你和 PHD 的区别在于，PHD 在想怎么改变世界，而你只想怎么在被世界改变之前拿到大厂的 Offer。"
+      },
+      "PROF": {
+        "code": "PROF",
+        "cn": "大老板",
+        "intro": "这个 Idea 很有意思，你明天出个实验结果。",
+        "desc": "恭喜，你测出了‘食物链顶端’人格。PROF 不生产代码，只生产 Push。你拥有某种超自然能力，能一眼看穿学生实验数据里那个伪造的异常点。你眼里的学生分三类：能发顶刊的、能干横向的、以及只会吃食堂补贴的。你的口头禅包括：‘最近进展怎么样？’、‘这个公式是不是推错了？’以及‘我没钱了，你自己想办法’。"
+      },
+      "THANK": {
+        "code": "THANK",
+        "cn": "谢词致辞家",
+        "intro": "感谢国家，感谢导师，感谢室友不杀之恩。",
+        "desc": "你测出了信院最温顺的人格。THAN-K 的灵魂深处住着一个永远在写 Thesis Acknowledgement 的小人。你对导师的 Push 报以微笑，对审稿人的刁难报以感谢，对深夜断电的实验室报以感恩。你不是没有脾气，你只是觉得在这个连神经网络都能爆炸的世界里，大家能坐下来一起调 Bug 已经是佛祖保佑了。你甚至会对着那个跑通了的 FPGA 开发板说‘谢谢你，真的’。"
+      },
+      "BUG": {
+        "code": "BUG",
+        "cn": "逻辑黑洞",
+        "intro": "我没动它，它自己就炸了。",
+        "desc": "有些人在写 Bug，而你本身就是个 BUG。你拥有一种‘让所有稳健系统瞬间瘫痪’的神秘体质。你在实验室坐一会儿，隔壁的服务器就会宕机；你改一个拼写，整个工程就会报 404 个错误。但这正是你的魅力所在——你是混沌理论的亲身实践者。如果你测出了 BUG 人格，建议远离所有精密仪器，尝试去做一些不需要逻辑的工作，比如……当个甲方？"
+      },
+      "SOTA": {
+        "code": "SOTA",
+        "cn": "刷榜狂人",
+        "intro": "只要我跑得够快，过时就追不上我。",
+        "desc": "你是 State Of The Art 的化身。你的生活就是一场永无止境的炼丹比赛。别人在刷朋友圈，你在刷 Arxiv；别人在过周末，你在改模型结构以提高那 0.1% 的准确率。SOTA 人格极度厌恶平庸，你的人生信条是：如果不能成为 Leaderboard 的第一名，那我这一生和咸鱼有什么区别？当然，为了那点微小的提升，你可能已经用掉了实验室半年的电费。"
+      },
+      "ZZZZ": {
+        "code": "ZZZZ",
+        "cn": "摸鱼神仙",
+        "intro": "显卡在跑，我也在‘跑’（指入梦）。",
+        "desc": "你是信院实验室里的‘背景板’。当你戴上耳机，眼睛盯着屏幕，导师以为你在看论文，其实你已经在脑内构建了一个完整的二次元世界，或者单纯只是睡着了。ZZZZ 人格深谙‘大隐隐于市，小隐隐于实验室’的道理。你有一种特异功能，能在导师推门进入的一瞬间，完成从‘深度睡眠’到‘深度学习’的状态切换。这种低功耗运行模式，让你成为了实验室里活得最久的人。"
+      },
+      "REVIEWER": {
+        "code": "REVIEWER",
+        "cn": "审稿人 2 号",
+        "intro": "你的实验很有趣，但毫无意义。",
+        "desc": "你就是那个传说中让无数研究生深夜痛哭的‘Reviewer #2’。你测出了最冷酷的人格。你眼里的世界充满了逻辑漏洞、实验对比不足以及引用格式错误。即便是一张再完美的图片，你也能挑出像素点的毛刺。REVIEWER 人格的使命就是：通过否定别人，来证明自己还活着。如果你没有朋友，别担心，那是因为你已经把他们的人生都 Reject 掉了。"
+      },
+      "TA": {
+        "code": "TA",
+        "cn": "助教炮灰",
+        "intro": "别问了，这题我也不知道怎么做。",
+        "desc": "TA 处于信院生态位的最底层。你既要忍受 PROF 的无理要求，又要面对本科生‘为什么我的代码跑不通’的灵魂拷问。你的人生就是一场巨大的 Buffer Overflow，处理着无穷无尽的作业批改和实验报告。你最大的梦想不是科研突破，而是这学期的实验课赶紧结束。你测出这个人格，说明你不仅是个老好人，还是个没法拒绝别人的苦命劳动力。"
+      },
+      "GHOST": {
+        "code": "GHOST",
+        "cn": "实验室幽灵",
+        "intro": "没人见过我，但我一直都在。",
+        "desc": "你是那种只出现在实验室打卡记录里的 GHOST。你下午四点出现，凌晨四点消失，完美避开了所有的人际交往。你可能正在某个阴暗的角落里单挑一个百亿参数的模型，也可能只是在实验室的沙发上筑巢生活。GHOST 人格拥有极高的独立生存能力，即便实验室搬迁了，可能都要过三个月才会有人发现你还留在旧楼里调参数。"
+      },
+      "PASS": {
+        "code": "PASS",
+        "cn": "及格万岁",
+        "intro": "60 分多一分都是对生命的浪费。",
+        "desc": "你是最务实的工程派。论文不求顶刊，只要能 PASS；考试不求高分，只要不挂。PASS 人格拥有极其精准的‘代价估算’能力，能用最少的代码实现刚好不崩溃的功能。在你看来，那些追求完美的人都是在做无效迭代。你的人生哲学就是：只要系统还没报 Error，我们就直接把这版代码 Push 上去，然后下班去撸串。"
+      },
+      "MALO": {
+        "code": "MALO",
+        "cn": "信院码农",
+        "intro": "人生如戏，我只是个传参数的吗喽。",
+        "desc": "你已经看透了研究生生活的本质：我们不是科学家，我们只是数据的搬运工，是 API 的调用者，是导师 Idea 的人肉实现器。吗喽（MALO）人格主打一个顺从与自嘲。‘好的老师’、‘这就改老师’、‘我真是个笨蛋老师’。你像一只在代码丛林里荡秋千的猴子，只要每天有香蕉（或者外卖）吃，你就能一直写下去。你的快乐很简单：今天的包终于编译通过了。"
+      },
+      "SLIDE": {
+        "code": "SLIDE",
+        "cn": "PPT 架构师",
+        "intro": "科研可以不行，但汇报必须洋气。",
+        "desc": "你测出了信院最具表演天赋的人格。你的实验可能只跑出了一个随机结果，但你的 PPT 却能讲出‘颠覆行业未来’的气势。SLIDE 人格坚信：科研的 90% 在于展示。你精通各种动画过渡、配色方案和高级图表。即便你的代码一团糟，只要你的汇报做得够炫，老板就会觉得你是下一个图灵奖得主。你不是在搞学术，你是在搞学术艺术。"
+      },
+      "WOC": {
+        "code": "WOC",
+        "cn": "大惊小怪者",
+        "intro": "我草，这也能跑通？！",
+        "desc": "WOC! 是你与这个世界沟通的唯一接口。看到学霸发了顶刊？卧槽！看到实验室着火了？卧槽！看到自己的 Loss 降到了 0.0001？卧槽！这种人格保持着最原始的好奇心（或者是知识极度匮乏带来的新鲜感）。你的人生充满了各种不可预测的突发事件，而你的应对机制也非常统一：先发出一声饱含深情的‘WOC’，然后再想接下来该怎么办。"
+      },
+      "THINK": {
+        "code": "THINK",
+        "cn": "思考者（闭门造车版）",
+        "intro": "我在想，这不科学啊……",
+        "desc": "THINK 人格的大脑是一个永不停歇的逻辑死循环。你经常坐在电脑前盯着一个分号发呆一个下午，思考这个分号在哲学意义上是否真的必要。你审视每一个变量名，论证每一种算法的边界。当别人都在跑实验时，你还在推导第一行公式。你的产出可能不高，但你的内心戏足以拍成一部关于‘二进制危机’的科幻大片。"
+      },
+      "SHIT": {
+        "code": "SHIT",
+        "cn": "愤青搬砖工",
+        "intro": "这代码是屎，这课题是屎，我写的也是屎。",
+        "desc": "你是实验室里的‘清理工’。你嘴上吐槽着前任师兄留下的代码像一坨 SHIT，手底下却在默默地重构。你觉得这个领域的现状是屎，导师给的思路是屎，连你此时此刻正在跑的实验也是屎。但奇怪的是，你正是靠着这股‘厌恶感’在推进工作。你一边骂骂咧咧，一边把这一堆 SHIT 捏成了能通过审核的形状。这就是伟大的‘狗屎推进力’。"
+      },
+      "DEAD": {
+        "code": "DEAD",
+        "cn": "学术死线者",
+        "intro": "Deadline 才是第一生产力。",
+        "desc": "在离截稿还有 24 小时之前，你是一具没有灵魂的行尸走肉。但在最后 24 小时，你就是被战神附体的科研机器。DEAD 人格完美诠释了什么叫‘生死时速’。你的人生信条是：没有 Deadline 的工作是不值得做的。你能在最后关头肾上腺素飙升，写出平时一个月都写不出来的逻辑。你测出这个人格，说明你正在悬崖边跳芭蕾，且乐在其中。"
+      },
+      "FAKE": {
+        "code": "FAKE",
+        "cn": "装懂大师",
+        "intro": "嗯嗯，这个 PPO 算法确实有点意思（其实我根本不懂）。",
+        "desc": "你是组会上的演技派。当导师提到一个极其冷门的定理时，你会深以为然地微微点头，甚至发出一声短促的‘对’。FAKE 人格精通‘学术社交辞令’，你能用各种专业术语把自己包装成一个深度参与者，而实际上你脑子里可能正在想晚饭吃什么。这种‘仿生科研人’的属性，让你在复杂的学术圈里游刃有余，直到有一天导师让你上台推导公式。"
+      },
+      "MUM": {
+        "code": "MUM",
+        "cn": "实验室老母亲",
+        "intro": "师弟，那个示波器不是这么用的……",
+        "desc": "你是实验室里的‘守护神’。谁的代码崩了找你，谁的显卡被占了找你，谁失恋了也找你。MUM 人格拥有超强的共情力和解决杂事的能力。你像个保姆一样维护着实验室的微弱平衡。只可惜，当你自己的论文写不出来时，却发现周围没有一个‘爸爸’能帮你。你总是温柔地对待别人，却对自己那个烂尾的实验下不去狠手。"
+      },
+      "IMSB": {
+        "code": "IMSB",
+        "cn": "自省小丑",
+        "intro": "我是傻逼，我真的，我是傻逼。",
+        "desc": "IMSB 人格在每一个深夜都会经历一场‘智商清零’。当你对着一个调了三天都没调通的 Bug 时，你会陷入深深的自我怀疑：我是怎么考上研究生的？我是不是人类进化的败笔？IMSB 不是真的傻，而是对自己的要求太高，以至于稍微遇到点挫折就想把自己的大脑格式化。别担心，明天早上起来，你又是一个自信满满（然后继续写 Bug）的科研人了。"
+      },
+      "SOLO": {
+        "code": "SOLO",
+        "cn": "科研单身狗",
+        "intro": "我与算法共存亡。",
+        "desc": "你测出了最纯粹的 SOLO 人格。你不需要室友，不需要女朋友/男朋友，你只需要一台配置够高的工作站。你眼里的‘浪漫’是程序跑通后的那个绿勾，‘激情’是超频时的风扇轰鸣。你主动切断了所有不必要的人际链接，因为你深知在这个世界上，只有代码不会背叛你（虽然它经常会报错，但那是你的错）。你是寂静实验室里最孤独也最自由的灵魂。"
+      },
+      "FUCK": {
+        "code": "FUCK",
+        "cn": "暴躁炼丹师",
+        "intro": "FUCK IT ALL!",
+        "desc": "你的人格充满了野性的爆发力。当编译器报出第 100 个 Warning 时，当服务器在凌晨三点突然断网时，你会发出一声响彻整栋信院大楼的怒吼。FUCK 人格拒绝被学术规矩束缚，你的代码风格狂放不羁，你的实验思路天马行空。你不是在搞科研，你是在跟这个操蛋的世界格斗。赢了，你就是 SOTA；输了，你就去炸了机房。"
+      },
+      "JOKER": {
+        "code": "JOKER",
+        "cn": "幽默小丑",
+        "intro": "原来科研就是一场笑话，而我坐在前排。",
+        "desc": "JOKER 是实验室里的快乐源泉（通常是建立在自己的痛苦之上）。你把被导师骂的经历编成段子，把延毕的可能性写成笑话。所有人都在焦虑，只有你在笑。你用一种近乎荒诞的幽默感来对抗窒息的学术压力。别人问你实验进展，你会说：‘进展很顺利，模型已经学会自己报错了。’你是那个在沉船上表演杂技的人，用笑声掩盖了水已经没过脖子的事实。"
+      },
+      "IMFW": {
+        "code": "IMFW",
+        "cn": "信院废柴",
+        "intro": "我真的很废，请导师放过我。",
+        "desc": "恭喜你，你达到了‘无欲则刚’的最高境界。IMFW 人格已经完全放弃了挣扎。你对顶刊没兴趣，对高薪没兴趣，你只想在实验室的角落里安安稳稳地当一个透明人。你那脆弱的自尊心让你像一朵含羞草，导师大声说一句话你都能缩回去。但奇怪的是，正是这种‘废物感’让你避开了所有的内卷。当大家都在为抢显卡打架时，你正在用淘汰的旧机器玩扫雷。"
+      },
+      "HHHH": {
+        "code": "HHHH",
+        "cn": "傻乐调参员",
+        "intro": "哈哈哈哈哈哈嗝。",
+        "desc": "系统检测到你的脑回路已经彻底‘烧穿’了。HHHH 人格常见于长期调参导致的精神恍惚。你看到 Loss 曲线像心电图一样上下乱跳，你笑了；看到硬盘空间满了，你笑了；看到导师在你身后，你还是笑了。这种人格没有具体的特质，只有无穷无尽的哈哈哈哈。你已经进入了‘学术涅槃’状态，世界的一切苦难在你眼里都只是一个好玩的采样点。"
+      },
+      "BODY": {
+        "code": "BODY",
+        "cn": "三体混沌者",
+        "intro": "毁灭你，与你何干？",
+        "desc": "你是信院最不可预测的人格。你的生活就像‘三体问题’一样，完全没有解析解。你一会儿疯狂学习，一会儿彻底摆烂，一会儿突然要去转行卖奶茶。你的大脑里存在着三种相互排斥的价值观，导致你经常处于物理意义上的‘脱水’状态。3-BODY 人格往往拥有惊人的爆发力，但也极易走向毁灭。你测出这个人格，说明你正在经历一场人生的‘乱纪元’，祝你在恒纪元到来前不要被导师格式化。"
+      }
+    };
+
     const TYPE_IMAGES = {
-  "IMSB": "./image/IMSB.png",
-  "BOSS": "./image/BOSS.png",
-  "MUM": "./image/MUM.png",
-  "FAKE": "./image/FAKE.png",
-  "Dior-s": "./image/Dior-s.jpg",
-  "DEAD": "./image/DEAD.png",
-  "ZZZZ": "./image/ZZZZ.png",
-  "GOGO": "./image/GOGO.png",
-  "FUCK": "./image/FUCK.png",
-  "CTRL": "./image/CTRL.png",
-  "HHHH": "./image/HHHH.png",
-  "SEXY": "./image/SEXY.png",
-  "OJBK": "./image/OJBK.png",
-  "JOKE-R": "./image/JOKE-R.jpg",
-  "POOR": "./image/POOR.png",
-  "OH-NO": "./image/OH-NO.png",
-  "MONK": "./image/MONK.png",
-  "SHIT": "./image/SHIT.png",
-  "THAN-K": "./image/THAN-K.png",
-  "MALO": "./image/MALO.png",
-  "ATM-er": "./image/ATM-er.png",
-  "THIN-K": "./image/THIN-K.png",
-  "SOLO": "./image/SOLO.png",
-  "LOVE-R": "./image/LOVE-R.png",
-  "WOC!": "./image/WOC.png",
-  "DRUNK": "./image/DRUNK.png",
-  "IMFW": "./image/IMFW.png"
-};
+      "CTRL": "./image/CTRL.png",
+      "PHD": "./image/PHD.png",
+      "MASTER": "./image/MASTER.png",
+      "PROF": "./image/PROF.png",
+      "THANK": "./image/THANK.png",
+      "BUG": "./image/BUG.png",
+      "SOTA": "./image/SOTA.png",
+      "ZZZZ": "./image/ZZZZ.png",
+      "REVIEWER": "./image/REVIEWER.png",
+      "TA": "./image/TA.png",
+      "GHOST": "./image/GHOST.png",
+      "PASS": "./image/PASS.png",
+      "MALO": "./image/MALO.png",
+      "SLIDE": "./image/SLIDE.png",
+      "WOC": "./image/WOC.png",
+      "THINK": "./image/THINK.png",
+      "SHIT": "./image/SHIT.png",
+      "DEAD": "./image/DEAD.png",
+      "FAKE": "./image/FAKE.png",
+      "MUM": "./image/MUM.png",
+      "IMSB": "./image/IMSB.png",
+      "SOLO": "./image/SOLO.png",
+      "FUCK": "./image/FUCK.png",
+      "JOKER": "./image/JOKER.png",
+      "IMFW": "./image/IMFW.png",
+      "HHHH": "./image/HHHH.png",
+      "BODY": "./image/3BODY.png"
+    };
 
     const NORMAL_TYPES = [
-  {
-    "code": "CTRL",
-    "pattern": "HHH-HMH-MHH-HHH-MHM"
-  },
-  {
-    "code": "ATM-er",
-    "pattern": "HHH-HHM-HHH-HMH-MHL"
-  },
-  {
-    "code": "Dior-s",
-    "pattern": "MHM-MMH-MHM-HMH-LHL"
-  },
-  {
-    "code": "BOSS",
-    "pattern": "HHH-HMH-MMH-HHH-LHL"
-  },
-  {
-    "code": "THAN-K",
-    "pattern": "MHM-HMM-HHM-MMH-MHL"
-  },
-  {
-    "code": "OH-NO",
-    "pattern": "HHL-LMH-LHH-HHM-LHL"
-  },
-  {
-    "code": "GOGO",
-    "pattern": "HHM-HMH-MMH-HHH-MHM"
-  },
-  {
-    "code": "SEXY",
-    "pattern": "HMH-HHL-HMM-HMM-HLH"
-  },
-  {
-    "code": "LOVE-R",
-    "pattern": "MLH-LHL-HLH-MLM-MLH"
-  },
-  {
-    "code": "MUM",
-    "pattern": "MMH-MHL-HMM-LMM-HLL"
-  },
-  {
-    "code": "FAKE",
-    "pattern": "HLM-MML-MLM-MLM-HLH"
-  },
-  {
-    "code": "OJBK",
-    "pattern": "MMH-MMM-HML-LMM-MML"
-  },
-  {
-    "code": "MALO",
-    "pattern": "MLH-MHM-MLH-MLH-LMH"
-  },
-  {
-    "code": "JOKE-R",
-    "pattern": "LLH-LHL-LML-LLL-MLM"
-  },
-  {
-    "code": "WOC!",
-    "pattern": "HHL-HMH-MMH-HHM-LHH"
-  },
-  {
-    "code": "THIN-K",
-    "pattern": "HHL-HMH-MLH-MHM-LHH"
-  },
-  {
-    "code": "SHIT",
-    "pattern": "HHL-HLH-LMM-HHM-LHH"
-  },
-  {
-    "code": "ZZZZ",
-    "pattern": "MHL-MLH-LML-MML-LHM"
-  },
-  {
-    "code": "POOR",
-    "pattern": "HHL-MLH-LMH-HHH-LHL"
-  },
-  {
-    "code": "MONK",
-    "pattern": "HHL-LLH-LLM-MML-LHM"
-  },
-  {
-    "code": "IMSB",
-    "pattern": "LLM-LMM-LLL-LLL-MLM"
-  },
-  {
-    "code": "SOLO",
-    "pattern": "LML-LLH-LHL-LML-LHM"
-  },
-  {
-    "code": "FUCK",
-    "pattern": "MLL-LHL-LLM-MLL-HLH"
-  },
-  {
-    "code": "DEAD",
-    "pattern": "LLL-LLM-LML-LLL-LHM"
-  },
-  {
-    "code": "IMFW",
-    "pattern": "LLH-LHL-LML-LLL-MLL"
-  }
-];
-    const DIM_EXPLANATIONS = {
-  "S1": {
-    "L": "对自己下手比别人还狠，夸你两句你都想先验明真伪。",
-    "M": "自信值随天气波动，顺风能飞，逆风先缩。",
-    "H": "心里对自己大致有数，不太会被路人一句话打散。"
-  },
-  "S2": {
-    "L": "内心频道雪花较多，常在“我是谁”里循环缓存。",
-    "M": "平时还能认出自己，偶尔也会被情绪临时换号。",
-    "H": "对自己的脾气、欲望和底线都算门儿清。"
-  },
-  "S3": {
-    "L": "更在意舒服和安全，没必要天天给人生开冲刺模式。",
-    "M": "想上进，也想躺会儿，价值排序经常内部开会。",
-    "H": "很容易被目标、成长或某种重要信念推着往前。"
-  },
-  "E1": {
-    "L": "感情里警报器灵敏，已读不回都能脑补到大结局。",
-    "M": "一半信任，一半试探，感情里常在心里拉锯。",
-    "H": "更愿意相信关系本身，不会被一点风吹草动吓散。"
-  },
-  "E2": {
-    "L": "感情投入偏克制，心门不是没开，是门禁太严。",
-    "M": "会投入，但会给自己留后手，不至于全盘梭哈。",
-    "H": "一旦认定就容易认真，情绪和精力都给得很足。"
-  },
-  "E3": {
-    "L": "容易黏人也容易被黏，关系里的温度感很重要。",
-    "M": "亲密和独立都要一点，属于可调节型依赖。",
-    "H": "空间感很重要，再爱也得留一块属于自己的地。"
-  },
-  "A1": {
-    "L": "看世界自带防御滤镜，先怀疑，再靠近。",
-    "M": "既不天真也不彻底阴谋论，观望是你的本能。",
-    "H": "更愿意相信人性和善意，遇事不急着把世界判死刑。"
-  },
-  "A2": {
-    "L": "规则能绕就绕，舒服和自由往往排在前面。",
-    "M": "该守的时候守，该变通的时候也不死磕。",
-    "H": "秩序感较强，能按流程来就不爱即兴炸场。"
-  },
-  "A3": {
-    "L": "意义感偏低，容易觉得很多事都像在走过场。",
-    "M": "偶尔有目标，偶尔也想摆烂，人生观处于半开机。",
-    "H": "做事更有方向，知道自己大概要往哪边走。"
-  },
-  "Ac1": {
-    "L": "做事先考虑别翻车，避险系统比野心更先启动。",
-    "M": "有时想赢，有时只想别麻烦，动机比较混合。",
-    "H": "更容易被成果、成长和推进感点燃。"
-  },
-  "Ac2": {
-    "L": "做决定前容易多转几圈，脑内会议常常超时。",
-    "M": "会想，但不至于想死机，属于正常犹豫。",
-    "H": "拍板速度快，决定一下就不爱回头磨叽。"
-  },
-  "Ac3": {
-    "L": "执行力和死线有深厚感情，越晚越像要觉醒。",
-    "M": "能做，但状态看时机，偶尔稳偶尔摆。",
-    "H": "推进欲比较强，事情不落地心里都像卡了根刺。"
-  },
-  "So1": {
-    "L": "社交启动慢热，主动出击这事通常得攒半天气。",
-    "M": "有人来就接，没人来也不硬凑，社交弹性一般。",
-    "H": "更愿意主动打开场子，在人群里不太怕露头。"
-  },
-  "So2": {
-    "L": "关系里更想亲近和融合，熟了就容易把人划进内圈。",
-    "M": "既想亲近又想留缝，边界感看对象调节。",
-    "H": "边界感偏强，靠太近会先本能性后退半步。"
-  },
-  "So3": {
-    "L": "表达更直接，心里有啥基本不爱绕。",
-    "M": "会看气氛说话，真实和体面通常各留一点。",
-    "H": "对不同场景的自我切换更熟练，真实感会分层发放。"
-  }
-};
-    const dimensionOrder = ['S1','S2','S3','E1','E2','E3','A1','A2','A3','Ac1','Ac2','Ac3','So1','So2','So3'];
+      { "code": "CTRL", "pattern": "HHH-HMH-MHH-HHH-MHM" },
+      { "code": "PHD", "pattern": "HHH-HHM-HHH-HMH-MHL" },    // 继承原 RE-USE 高强度特征
+      { "code": "MASTER", "pattern": "MHM-MMH-MHM-HMH-LHL" }, // 继承原 DIOR-S 实用主义特征
+      { "code": "PROF", "pattern": "HHH-HMH-MMH-HHH-LHL" },   // 权力/控制导向
+      { "code": "THANK", "pattern": "MHM-HMM-HHM-MMH-MHL" },  // 顺从/平和导向
+      { "code": "BUG", "pattern": "HHL-LMH-LHH-HHM-LHL" },    // 逻辑混乱特征
+      { "code": "SOTA", "pattern": "HHM-HMH-MMH-HHH-MHM" },   // 追求极致特征
+      { "code": "ZZZZ", "pattern": "HMH-HHL-HMM-HMM-HLH" },   // 继承原 ICON 的低能耗特征
+      { "code": "REVIEWER", "pattern": "MLH-LHL-HLH-MLM-MLH" }, // 继承原 ROM-ER 的挑剔特征
+      { "code": "TA", "pattern": "MMH-MHL-HMM-LMM-HLL" },     // 照顾/琐碎特征
+      { "code": "GHOST", "pattern": "HLM-MML-MLM-MLM-HLH" },  // 疏离/边缘特征
+      { "code": "PASS", "pattern": "MMH-MMM-HML-LMM-MML" },   // 随和/及格线特征
+      { "code": "MALO", "pattern": "MLH-MHM-MLH-MLH-LMH" },   // 劳动密集型特征
+      { "code": "SLIDE", "pattern": "LLH-LHL-LML-LLL-MLM" },  // 继承原 SLIDE-R 表现力特征
+      { "code": "WOC", "pattern": "HHL-HMH-MMH-HHM-LHH" },    // 惊讶/情绪化
+      { "code": "THINK", "pattern": "HHL-HMH-MLH-MHM-LHH" },  // 思考/内向
+      { "code": "SHIT", "pattern": "HHL-HLH-LMM-HHM-LHH" },   // 愤世嫉俗
+      { "code": "DEAD", "pattern": "MHL-MLH-LML-MML-LHM" },   // 压哨/紧急
+      { "code": "FAKE", "pattern": "HHL-MLH-LMH-HHH-LHL" },   // 继承原 K-CAR 的伪装特征
+      { "code": "MUM", "pattern": "HHL-LLH-LLM-MML-LHM" },    // 继承原 MATH-ER 的守护特征
+      { "code": "IMSB", "pattern": "LLM-LMM-LLL-LLL-MLM" },   // 自我否定特征
+      { "code": "SOLO", "pattern": "LML-LLH-LHL-LML-LHM" },   // 孤立特征
+      { "code": "FUCK", "pattern": "MLL-LHL-LLM-MLL-HLH" },   // 暴躁/冲动特征
+      { "code": "JOKER", "pattern": "LLL-LLM-LML-LLL-LHM" },  // 继承原 D-END 的虚无/解构特征
+      { "code": "IMFW", "pattern": "LLH-LHL-LML-LLL-MLL" }    // 低能量特征
+    ];
 
-    const DRUNK_TRIGGER_QUESTION_ID = 'drink_gate_q2';
+    const DIM_EXPLANATIONS = {
+      "S1": {
+        "L": "学术自信为负，导师咳嗽一声你都想原地退学。",
+        "M": "自信随模型收敛情况波动，Loss一降你就是图灵，Loss一升你就是垃圾。",
+        "H": "内心坚如磐石，哪怕代码全是红字也坚信是编译器的问题。"
+      },
+      "S2": {
+        "L": "处于学术迷雾中，选题像开盲盒，每次组会都像在现编。",
+        "M": "大概知道自己在做什么，但深究原理就开始眼神躲闪。",
+        "H": "对选题的底线和前沿极度清晰，一眼就能看出哪篇Paper在灌水，哪篇是真正的SOTA。"
+      },
+      "S3": {
+        "L": "混个学位是唯一目标，多跑一组数据都是对生命的浪费。",
+        "M": "想搞点大新闻，也想舒舒服服躺平，在‘追求卓越’和‘差不多得了’之间反复横跳。",
+        "H": "被某种改变世界的野心驱动，是实验室里唯一没死透的灵魂。"
+      },
+      "E1": {
+        "L": "对导师存在严重的CPU后遗症，看到微信红色圆点会产生生理性心悸。",
+        "M": "一半信任，一半提防，在“老板带我飞”和“老板坑我命”之间徘徊。",
+        "H": "和老板平起平坐，关系稳如老狗，甚至敢在老板面前关手机。"
+      },
+      "E2": {
+        "L": "实验室边缘人，工位上只有灰尘和外卖盒。",
+        "M": "会干活，但会给自己留后路，绝不全盘梭哈给实验室。",
+        "H": "以实验室为家，情绪和头发都交给了机柜。"
+      },
+      "E3": {
+        "L": "典型的社交保姆，师弟的Bug就是我的Bug，谁都能来分一杯羹。",
+        "M": "边界感动态调节，熟了就带带师弟师妹，不熟就‘我也不会，去搜搜Github’。",
+        "H": "学术孤狼，戴上耳机就是我的领地，踏入者死。"
+      },
+      "A1": {
+        "L": "学术虚无主义者，觉得现在的顶会全是炼丹和魔改，所谓的SOTA都是调参数P出来的。",
+        "M": "既不天真也不彻底阴谋论，观望是你的本能。",
+        "H": "理想主义者，愿意相信人性和科学的善意，遇事不急着骂这个圈子是屎。"
+      },
+      "A2": {
+        "L": "规则能绕就绕，为了跑通实验，平滑一下数据那是家常便饭。",
+        "M": "该守的时候守，实在毕不了业的时候也会稍微“变通”一下。",
+        "H": "学术洁癖，为了实验的真实性能把导师逼疯。"
+      },
+      "A3": {
+        "L": "觉得读研就是一场大型社会实验，一切都没意义。",
+        "M": "偶尔有目标，偶尔觉得科研就是高级搬砖，处于半开机状态。",
+        "H": "做事有明确意义感，知道自己发这篇Paper是为了什么。"
+      },
+      "Ac1": {
+        "L": "避险驱动，最大的产出动力是不被老板骂、不被延毕、不被导师在组会上点名。",
+        "M": "有时想赢，有时只想别出乱子，动机比较混合。",
+        "H": "疯狂追求成果产出，事情不推进到SOTA你浑身难受。"
+      },
+      "Ac2": {
+        "L": "玄学Debug派，改代码全靠第六感和AI，如果代码跑通了，你甚至不敢呼吸怕惊动它。",
+        "M": "会想，但不至于想死机，正常犹豫水平。",
+        "H": "拍板极快，决定了用这个框架就绝不改口。"
+      },
+      "Ac3": {
+        "L": "和Deadline有宿命般的感情，最后10分钟才是你的觉醒时刻。",
+        "M": "状态看心情，顺风一天一篇Paper，逆风一月一个Bug。",
+        "H": "推进欲极强，代码不落地心里就像卡了根刺。"
+      },
+      "So1": {
+        "L": "学术社交启动慢，在大佬面前连个招呼都打得像告别。",
+        "M": "有人带就去Social，没人带也乐得清静，弹性社交。",
+        "H": "天生的交际花，能把无聊的PPT讲成脱口秀现场。"
+      },
+      "So2": {
+        "L": "实验室大融合，觉得大家都是同根生的吗喽，师兄的显存就是我的显存，不分彼此。",
+        "M": "既想亲近又留缝隙，边界感随对方的智商调节。",
+        "H": "边界感极其强悍，靠太近会让你产生生理性不适。"
+      },
+      "So3": {
+        "L": "表达极度直接，组会上敢直接指出导师的推导错误。",
+        "M": "会看气氛说话，真理和体面通常各留一点。",
+        "H": "对不同场合的自我切换极其熟练，组会上的你和面试时的你不是同一个人。"
+      }
+    };
+
+    const dimensionOrder = ['S1', 'S2', 'S3', 'E1', 'E2', 'E3', 'A1', 'A2', 'A3', 'Ac1', 'Ac2', 'Ac3', 'So1', 'So2', 'So3'];
+    DRUNK_TRIGGER_QUESTION_ID = 'intern_gate_q2';
+
+    let myRadarChart = null; // 全局变量用于销毁旧图表
+
+    function renderRadarChart(rawScores) {
+      const ctx = document.getElementById('radarChart').getContext('2d');
+
+      // 将15个维度聚合为5个大模型
+      const modelScores = {
+        '自我模型': (rawScores.S1 + rawScores.S2 + rawScores.S3) / 3,
+        '情感模型': (rawScores.E1 + rawScores.E2 + rawScores.E3) / 3,
+        '态度模型': (rawScores.A1 + rawScores.A2 + rawScores.A3) / 3,
+        '行动驱力': (rawScores.Ac1 + rawScores.Ac2 + rawScores.Ac3) / 3,
+        '社交模型': (rawScores.So1 + rawScores.So2 + rawScores.So3) / 3
+      };
+
+      const data = {
+        labels: Object.keys(modelScores),
+        datasets: [{
+          label: '当前内核状态',
+          data: Object.values(modelScores),
+          fill: true,
+          backgroundColor: 'rgba(59, 130, 246, 0.2)', // 使用 CSS 中的 --accent 透明色
+          borderColor: '#1e40af', // 使用 --accent-strong
+          pointBackgroundColor: '#1e40af',
+          pointBorderColor: '#fff',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: '#1e40af'
+        }]
+      };
+
+      const config = {
+        type: 'radar',
+        data: data,
+        options: {
+          elements: { line: { borderWidth: 2 } },
+          scales: {
+            r: {
+              angleLines: { display: true },
+              suggestedMin: 1,
+              suggestedMax: 3,
+              ticks: { display: false, stepSize: 1 }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      };
+
+      if (myRadarChart) myRadarChart.destroy();
+      myRadarChart = new Chart(ctx, config);
+    }
 
     const app = {
       shuffledQuestions: [],
@@ -1509,8 +1856,8 @@
 
     function getVisibleQuestions() {
       const visible = [...app.shuffledQuestions];
-      const gateIndex = visible.findIndex(q => q.id === 'drink_gate_q1');
-      if (gateIndex !== -1 && app.answers['drink_gate_q1'] === 3) {
+      const gateIndex = visible.findIndex(q => q.id === 'intern_gate_q1');
+      if (gateIndex !== -1 && app.answers['intern_gate_q1'] === 3) {
         visible.splice(gateIndex + 1, 0, specialQuestions[1]);
       }
       return visible;
@@ -1535,16 +1882,16 @@
           <div class="question-title">${q.text}</div>
           <div class="options">
             ${q.options.map((opt, i) => {
-              const code = ['A', 'B', 'C', 'D'][i] || String(i + 1);
-              const checked = app.answers[q.id] === opt.value ? 'checked' : '';
-              return `
+          const code = ['A', 'B', 'C', 'D'][i] || String(i + 1);
+          const checked = app.answers[q.id] === opt.value ? 'checked' : '';
+          return `
                 <label class="option">
                   <input type="radio" name="${q.id}" value="${opt.value}" ${checked} />
                   <div class="option-code">${code}</div>
                   <div>${opt.label}</div>
                 </label>
               `;
-            }).join('')}
+        }).join('')}
           </div>
         `;
         questionList.appendChild(card);
@@ -1555,9 +1902,9 @@
           const { name, value } = e.target;
           app.answers[name] = Number(value);
 
-          if (name === 'drink_gate_q1') {
+          if (name === 'intern_gate_q1') {
             if (Number(value) !== 3) {
-              delete app.answers['drink_gate_q2'];
+              delete app.answers['intern_gate_q2'];
             }
             renderQuestions();
             return;
@@ -1644,11 +1991,11 @@
       let secondaryType = null;
 
       if (drunkTriggered) {
-        finalType = TYPE_LIBRARY.DRUNK;
+        finalType = TYPE_LIBRARY.BODY;
         secondaryType = bestNormal;
         modeKicker = '隐藏人格已激活';
-        badge = '匹配度 100% · 酒精异常因子已接管';
-        sub = '乙醇亲和性过强，系统已直接跳过常规人格审判。';
+        badge = '匹配度 100% · 精神异常';
+        sub = '系统已直接跳过常规人格审判。';
         special = true;
       } else if (bestNormal.similarity < 60) {
         finalType = TYPE_LIBRARY.HHHH;
@@ -1659,6 +2006,15 @@
       } else {
         finalType = bestNormal;
       }
+      // 在 computeResult 逻辑末尾修改
+      const randomNotes = [
+        "根据显存监测，您目前的焦虑水平已超过 80GB H100 负荷。",
+        "系统检测到您的逻辑中有 12% 的成分属于‘导师崇拜’，请及时清理。",
+        "警告：检测到您的 LeetCode 刷题记录，学术忠诚度下降中。",
+        "建议：多喝热水，少看论文，保持心态平和，才能更好地发挥你的科研潜力。"
+      ];
+      const selectedNote = randomNotes[Math.floor(Math.random() * randomNotes.length)];
+      sub = `${sub} \n [系统备注：${selectedNote}]`;
 
       return {
         rawScores,
@@ -1719,6 +2075,7 @@
       }
 
       renderDimList(result);
+      renderRadarChart(result.rawScores);
       showScreen('result');
     }
 
@@ -1728,9 +2085,8 @@
       const shuffledRegular = shuffle(questions);
       const insertIndex = Math.floor(Math.random() * shuffledRegular.length) + 1;
       app.shuffledQuestions = [
-        ...shuffledRegular.slice(0, insertIndex),
-        specialQuestions[0],
-        ...shuffledRegular.slice(insertIndex)
+        ...shuffledRegular,
+        specialQuestions[0] // 这里是血管流淌液体的入口题
       ];
       renderQuestions();
       showScreen('test');
@@ -1744,4 +2100,5 @@
   </script>
 
 </body>
+
 </html>
